@@ -4,33 +4,34 @@
 
 #pragma once
 
+#include <spdlog/spdlog.h>
 #include "common/common_types.h"
+#include "common/logging/text_formatter.h"
 
 namespace Log {
 
 /// Specifies the severity or level of detail of the log message.
-enum class Level : u8 {
-    Trace,    ///< Extremely detailed and repetitive debugging information that is likely to
-              ///  pollute logs.
-    Debug,    ///< Less detailed debugging information.
-    Info,     ///< Status information from important points during execution.
-    Warning,  ///< Minor or potential problems found during execution of a task.
-    Error,    ///< Major problems found during execution of a task that prevent it from being
-              ///  completed.
-    Critical, ///< Major problems during execution that threathen the stability of the entire
-              ///  application.
-
-    Count ///< Total number of logging levels
+enum class Level {
+    Trace,     ///< Extremely detailed and repetitive debugging information that is likely to
+               ///  pollute logs.
+    Debug,     ///< Less detailed debugging information.
+    Info,      ///< Status information from important points during execution.
+    Notice,    ///< Cursory information that may be of importance.
+    Warning,   ///< Minor or potential problems found during execution of a task.
+    Error,     ///< Major problems found during execution of a task that prevent it from being
+               ///  completed.
+    Critical,  ///< Major problems during execution that threathen the stability of the entire
+               ///  application.
+    Alert,     ///< Information that should be noted. May or may not be fatal.
+    Emergency, ///< Important fatal errors that will cause the emulator to be unrecoverable.
 };
-
-typedef u8 ClassType;
 
 /**
  * Specifies the sub-system that generated the log message.
  *
  * @note If you add a new entry here, also add a corresponding one to `ALL_LOG_CLASSES` in backend.cpp.
  */
-enum class Class : ClassType {
+enum class Class {
     Log,                        ///< Messages about the log system itself
     Common,                     ///< Library routines
     Common_Filesystem,          ///< Filesystem interface library
@@ -82,26 +83,91 @@ enum class Class : ClassType {
     Audio_DSP,                  ///< The HLE implementation of the DSP
     Audio_Sink,                 ///< Emulator audio output backend
     Loader,                     ///< ROM loader
-
-    Count ///< Total number of logging classes
 };
 
-/// Logs a message to the global logger.
+/// Represents a stored logger instance.
+using LoggerPtr = std::shared_ptr<spdlog::logger>;
+
+/// Initializes the loggers.
+void Initialize();
+
+/**
+ * Retrieves a specific logger based on the given @ref Class.
+ *
+ * @param log_class The logging class representing a specific logger.
+ *
+ * @return The logger associated with the given class.
+ */
+LoggerPtr Get(Class log_class);
+
+/**
+ * Parses a given logging filter string.
+ *
+ * TODO: Explain more about the filter here.
+ *
+ * @param filter The logging filter.
+ */
+void ParseFilter(const std::string& filter);
+
+namespace detail {
+
+/// Logs a message to a logger identified by the given log class.
+template <typename... Args>
 void LogMessage(Class log_class, Level log_level,
-    const char* filename, unsigned int line_nr, const char* function,
-#ifdef _MSC_VER
-    _Printf_format_string_
-#endif
-    const char* format, ...)
-#ifdef __GNUC__
-    __attribute__((format(printf, 6, 7)))
-#endif
-    ;
+                const char* filepath, u32 line_num,
+                const char* function, const char* format,
+                const Args&... args) {
+    const auto fmt = fmt::format("{}:{}:{} - {}", TrimSourcePath(filepath), function, line_num, format);
+    auto logger = Get(log_class);
+
+    switch (log_level) {
+    case Level::Trace:
+        logger->trace(fmt.c_str(), args...);
+        break;
+    case Level::Debug:
+        logger->debug(fmt.c_str(), args...);
+        break;
+    case Level::Info:
+        logger->info(fmt.c_str(), args...);
+        break;
+    case Level::Notice:
+        logger->notice(fmt.c_str(), args...);
+        break;
+    case Level::Warning:
+        logger->warn(fmt.c_str(), args...);
+        break;
+    case Level::Error:
+        logger->error(fmt.c_str(), args...);
+        break;
+    case Level::Critical:
+        logger->critical(fmt.c_str(), args...);
+        break;
+    case Level::Alert:
+        logger->alert(fmt.c_str(), args...);
+        break;
+    case Level::Emergency:
+        logger->emerg(fmt.c_str(), args...);
+        break;
+    }
+}
+
+} // namespace detail
 
 } // namespace Log
 
+#undef LOG_GENERIC
+#undef LOG_TRACE
+#undef LOG_DEBUG
+#undef LOG_INFO
+#undef LOG_NOTICE
+#undef LOG_WARNING
+#undef LOG_ERROR
+#undef LOG_CRITICAL
+#undef LOG_ALERT
+#undef LOG_EMERGENCY
+
 #define LOG_GENERIC(log_class, log_level, ...) \
-    ::Log::LogMessage(log_class, log_level, __FILE__, __LINE__, __func__, __VA_ARGS__)
+    ::Log::detail::LogMessage(log_class, log_level, __FILE__, __LINE__, __func__, __VA_ARGS__)
 
 #ifdef _DEBUG
 #define LOG_TRACE(   log_class, ...) LOG_GENERIC(::Log::Class::log_class, ::Log::Level::Trace,    __VA_ARGS__)
@@ -109,8 +175,11 @@ void LogMessage(Class log_class, Level log_level,
 #define LOG_TRACE(   log_class, ...) (void(0))
 #endif
 
-#define LOG_DEBUG(   log_class, ...) LOG_GENERIC(::Log::Class::log_class, ::Log::Level::Debug,    __VA_ARGS__)
-#define LOG_INFO(    log_class, ...) LOG_GENERIC(::Log::Class::log_class, ::Log::Level::Info,     __VA_ARGS__)
-#define LOG_WARNING( log_class, ...) LOG_GENERIC(::Log::Class::log_class, ::Log::Level::Warning,  __VA_ARGS__)
-#define LOG_ERROR(   log_class, ...) LOG_GENERIC(::Log::Class::log_class, ::Log::Level::Error,    __VA_ARGS__)
-#define LOG_CRITICAL(log_class, ...) LOG_GENERIC(::Log::Class::log_class, ::Log::Level::Critical, __VA_ARGS__)
+#define LOG_DEBUG(    log_class, ...) LOG_GENERIC(::Log::Class::log_class, ::Log::Level::Debug,     __VA_ARGS__)
+#define LOG_INFO(     log_class, ...) LOG_GENERIC(::Log::Class::log_class, ::Log::Level::Info,      __VA_ARGS__)
+#define LOG_NOTICE(   log_class, ...) LOG_GENERIC(::Log::Class::log_class, ::Log::Level::Notice,    __VA_ARGS__)
+#define LOG_WARNING(  log_class, ...) LOG_GENERIC(::Log::Class::log_class, ::Log::Level::Warning,   __VA_ARGS__)
+#define LOG_ERROR(    log_class, ...) LOG_GENERIC(::Log::Class::log_class, ::Log::Level::Error,     __VA_ARGS__)
+#define LOG_CRITICAL( log_class, ...) LOG_GENERIC(::Log::Class::log_class, ::Log::Level::Critical,  __VA_ARGS__)
+#define LOG_ALERT(    log_class, ...) LOG_GENERIC(::Log::Class::log_class, ::Log::Level::Alert,     __VA_ARGS__)
+#define LOG_EMERGENCY(log_class, ...) LOG_GENERIC(::Log::Class::log_class, ::Log::Level::Emergency, __VA_ARGS__)

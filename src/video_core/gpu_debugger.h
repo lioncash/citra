@@ -34,7 +34,7 @@ public:
         virtual void GXCommandProcessed(int total_command_count)
         {
             const GSP_GPU::Command& cmd = observed->ReadGXCommandHistory(total_command_count-1);
-            LOG_TRACE(Debug_GPU, "Received command: id=%x", (int)cmd.id.Value());
+            LOG_TRACE(Debug_GPU, "Received command: id={:x}", static_cast<int>(cmd.id.Value()));
         }
 
     protected:

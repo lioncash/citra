@@ -57,7 +57,7 @@ static void AppendSource(std::string& out, const PicaShaderConfig& config, TevSt
             break;
         default:
             out += "texture(tex[0], texcoord[0])";
-            LOG_CRITICAL(HW_GPU, "Unhandled texture type %x", static_cast<int>(state.texture0_type));
+            LOG_CRITICAL(HW_GPU, "Unhandled texture type {:x}", static_cast<int>(state.texture0_type));
             UNIMPLEMENTED();
             break;
         }
@@ -79,7 +79,7 @@ static void AppendSource(std::string& out, const PicaShaderConfig& config, TevSt
         break;
     default:
         out += "vec4(0.0)";
-        LOG_CRITICAL(Render_OpenGL, "Unknown source op %u", source);
+        LOG_CRITICAL(Render_OpenGL, "Unknown source op {}", static_cast<u32>(source));
         break;
     }
 }
@@ -136,7 +136,7 @@ static void AppendColorModifier(std::string& out, const PicaShaderConfig& config
         break;
     default:
         out += "vec3(0.0)";
-        LOG_CRITICAL(Render_OpenGL, "Unknown color modifier op %u", modifier);
+        LOG_CRITICAL(Render_OpenGL, "Unknown color modifier op {}", static_cast<u32>(modifier));
         break;
     }
 }
@@ -184,7 +184,7 @@ static void AppendAlphaModifier(std::string& out, const PicaShaderConfig& config
         break;
     default:
         out += "0.0";
-        LOG_CRITICAL(Render_OpenGL, "Unknown alpha modifier op %u", modifier);
+        LOG_CRITICAL(Render_OpenGL, "Unknown alpha modifier op {}", static_cast<u32>(modifier));
         break;
     }
 }
@@ -225,7 +225,8 @@ static void AppendColorCombiner(std::string& out, TevStageConfig::Operation oper
         break;
     default:
         out += "vec3(0.0)";
-        LOG_CRITICAL(Render_OpenGL, "Unknown color combiner operation: %u", operation);
+        LOG_CRITICAL(Render_OpenGL, "Unknown color combiner operation: {}",
+                     static_cast<u32>(operation));
         break;
     }
     out += ", vec3(0.0), vec3(1.0))"; // Clamp result to 0.0, 1.0
@@ -263,7 +264,8 @@ static void AppendAlphaCombiner(std::string& out, TevStageConfig::Operation oper
         break;
     default:
         out += "0.0";
-        LOG_CRITICAL(Render_OpenGL, "Unknown alpha combiner operation: %u", operation);
+        LOG_CRITICAL(Render_OpenGL, "Unknown alpha combiner operation: {}",
+                     static_cast<u32>(operation));
         break;
     }
     out += ", 0.0, 1.0)";
@@ -294,7 +296,8 @@ static void AppendAlphaTestCondition(std::string& out, Regs::CompareFunc func) {
 
     default:
         out += "false";
-        LOG_CRITICAL(Render_OpenGL, "Unknown alpha test condition %u", func);
+        LOG_CRITICAL(Render_OpenGL, "Unknown alpha test condition {}",
+                     static_cast<u32>(func));
         break;
     }
 }
@@ -366,7 +369,7 @@ static void WriteLighting(std::string& out, const PicaShaderConfig& config) {
         }
     } else if (lighting.bump_mode == Pica::Regs::LightingBumpMode::TangentMap) {
         // Bump mapping is enabled using a tangent map
-        LOG_CRITICAL(HW_GPU, "unimplemented bump mapping mode (tangent mapping)");
+        LOG_CRITICAL(HW_GPU, "Unimplemented bump mapping mode (tangent mapping)");
         UNIMPLEMENTED();
     } else {
         // No bump mapping - surface local normal is just a unit normal
@@ -398,7 +401,7 @@ static void WriteLighting(std::string& out, const PicaShaderConfig& config) {
             break;
 
         default:
-            LOG_CRITICAL(HW_GPU, "Unknown lighting LUT input %d\n", (int)input);
+            LOG_CRITICAL(HW_GPU, "Unknown lighting LUT input {}\n", static_cast<int>(input));
             UNIMPLEMENTED();
             break;
         }

@@ -110,7 +110,7 @@ static void WritePicaReg(u32 id, u32 value, u32 mask) {
                 auto& setup = regs.vs_default_attributes_setup;
 
                 if (setup.index >= 16) {
-                    LOG_ERROR(HW_GPU, "Invalid VS default attribute index %d", (int)setup.index);
+                    LOG_ERROR(HW_GPU, "Invalid VS default attribute index {}", setup.index);
                     break;
                 }
 
@@ -122,7 +122,7 @@ static void WritePicaReg(u32 id, u32 value, u32 mask) {
                 attribute.y = float24::FromRaw(((default_attr_write_buffer[1] & 0xFFFF) << 8) | ((default_attr_write_buffer[2] >> 24) & 0xFF));
                 attribute.x = float24::FromRaw(default_attr_write_buffer[2] & 0xFFFFFF);
 
-                LOG_TRACE(HW_GPU, "Set default VS attribute %x to (%f %f %f %f)", (int)setup.index,
+                LOG_TRACE(HW_GPU, "Set default VS attribute {} to ({} {} {} {})", setup.index,
                           attribute.x.ToFloat32(), attribute.y.ToFloat32(), attribute.z.ToFloat32(),
                           attribute.w.ToFloat32());
 
@@ -315,7 +315,7 @@ static void WritePicaReg(u32 id, u32 value, u32 mask) {
             int index = (id - PICA_REG_INDEX_WORKAROUND(vs.int_uniforms[0], 0x2b1));
             auto values = regs.vs.int_uniforms[index];
             g_state.vs.uniforms.i[index] = Math::Vec4<u8>(values.x, values.y, values.z, values.w);
-            LOG_TRACE(HW_GPU, "Set integer uniform %d to %02x %02x %02x %02x",
+            LOG_TRACE(HW_GPU, "Set integer uniform {} to {:02x} {:02x} {:02x} {:02x}",
                       index, values.x.Value(), values.y.Value(), values.z.Value(), values.w.Value());
             break;
         }
@@ -345,7 +345,7 @@ static void WritePicaReg(u32 id, u32 value, u32 mask) {
                 auto& uniform = g_state.vs.uniforms.f[uniform_setup.index];
 
                 if (uniform_setup.index > 95) {
-                    LOG_ERROR(HW_GPU, "Invalid VS uniform index %d", (int)uniform_setup.index);
+                    LOG_ERROR(HW_GPU, "Invalid VS uniform index {}", uniform_setup.index.Value());
                     break;
                 }
 
@@ -361,7 +361,7 @@ static void WritePicaReg(u32 id, u32 value, u32 mask) {
                     uniform.x = float24::FromRaw(uniform_write_buffer[2] & 0xFFFFFF);
                 }
 
-                LOG_TRACE(HW_GPU, "Set uniform %x to (%f %f %f %f)", (int)uniform_setup.index,
+                LOG_TRACE(HW_GPU, "Set uniform {} to ({} {} {} {})", uniform_setup.index.Value(),
                           uniform.x.ToFloat32(), uniform.y.ToFloat32(), uniform.z.ToFloat32(),
                           uniform.w.ToFloat32());
 

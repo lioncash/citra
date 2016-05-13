@@ -113,42 +113,42 @@ static void ThrowFatalError(Service::Interface* self) {
     case ErrSpecifier1:
     {
         const auto& errtype = errinfo->errtype1;
-        LOG_CRITICAL(Service_ERR, "PID: 0x%08X_0x%08X", errtype.pid_low, errtype.pid_high);
-        LOG_CRITICAL(Service_ERR, "REV: %d", errtype.rev_low | (errtype.rev_high << 16));
-        LOG_CRITICAL(Service_ERR, "AID: 0x%08X_0x%08X", errtype.aid_low, errtype.aid_high);
-        LOG_CRITICAL(Service_ERR, "ADR: 0x%08X", errtype.address);
+        LOG_CRITICAL(Service_ERR, "PID: {:#08X}_{:#08X}", errtype.pid_low, errtype.pid_high);
+        LOG_CRITICAL(Service_ERR, "REV: {}", errtype.rev_low | (errtype.rev_high << 16));
+        LOG_CRITICAL(Service_ERR, "AID: {:#08X}_{:#08X}", errtype.aid_low, errtype.aid_high);
+        LOG_CRITICAL(Service_ERR, "ADR: {:#08X}", errtype.address);
 
-        LOG_CRITICAL(Service_ERR, "RSL: 0x%08X", errtype.result_code.raw);
-        LOG_CRITICAL(Service_ERR, "  Level: %u",   errtype.result_code.level.Value());
-        LOG_CRITICAL(Service_ERR, "  Summary: %u", errtype.result_code.summary.Value());
-        LOG_CRITICAL(Service_ERR, "  Module: %u",  errtype.result_code.module.Value());
-        LOG_CRITICAL(Service_ERR, "  Desc: %u",    errtype.result_code.description.Value());
+        LOG_CRITICAL(Service_ERR, "RSL: {:#08X}", errtype.result_code.raw);
+        LOG_CRITICAL(Service_ERR, "  Level: {}",   errtype.result_code.level.Value());
+        LOG_CRITICAL(Service_ERR, "  Summary: {}", errtype.result_code.summary.Value());
+        LOG_CRITICAL(Service_ERR, "  Module: {}",  errtype.result_code.module.Value());
+        LOG_CRITICAL(Service_ERR, "  Desc: {}",    errtype.result_code.description.Value());
         break;
     }
 
     case ErrSpecifier3:
     {
         const auto& errtype = errinfo->errtype3;
-        LOG_CRITICAL(Service_ERR, "PID: 0x%08X_0x%08X", errtype.pid_low, errtype.pid_high);
-        LOG_CRITICAL(Service_ERR, "REV: %d", errtype.rev_low | (errtype.rev_high << 16));
-        LOG_CRITICAL(Service_ERR, "AID: 0x%08X_0x%08X", errtype.aid_low, errtype.aid_high);
-        LOG_CRITICAL(Service_ERR, "TYPE: %s", GetErrInfo3Type(errtype.error_type).c_str());
+        LOG_CRITICAL(Service_ERR, "PID: {:#08X}_{:#08X}", errtype.pid_low, errtype.pid_high);
+        LOG_CRITICAL(Service_ERR, "REV: {}", errtype.rev_low | (errtype.rev_high << 16));
+        LOG_CRITICAL(Service_ERR, "AID: {:#08X}_{:#08X}", errtype.aid_low, errtype.aid_high);
+        LOG_CRITICAL(Service_ERR, "TYPE: {}", GetErrInfo3Type(errtype.error_type).c_str());
 
-        LOG_CRITICAL(Service_ERR, "PC: 0x%08X", errtype.pc);
-        LOG_CRITICAL(Service_ERR, "LR: 0x%08X", errtype.lr);
-        LOG_CRITICAL(Service_ERR, "SP: 0x%08X", errtype.sp);
-        LOG_CRITICAL(Service_ERR, "CPSR: 0x%08X", errtype.cpsr);
+        LOG_CRITICAL(Service_ERR, "PC: {:#08X}", errtype.pc);
+        LOG_CRITICAL(Service_ERR, "LR: {:#08X}", errtype.lr);
+        LOG_CRITICAL(Service_ERR, "SP: {:#08X}", errtype.sp);
+        LOG_CRITICAL(Service_ERR, "CPSR: {:#08X}", errtype.cpsr);
 
         switch (errtype.error_type) {
         case PrefetchAbort:
         case DataAbort:
-            LOG_CRITICAL(Service_ERR, "Fault Address: 0x%08X", errtype.fault_addr);
-            LOG_CRITICAL(Service_ERR, "Fault Status Register: 0x%08X", errtype.fault_status_reg);
+            LOG_CRITICAL(Service_ERR, "Fault Address: {:#08X}", errtype.fault_addr);
+            LOG_CRITICAL(Service_ERR, "Fault Status Register: {:#08X}", errtype.fault_status_reg);
             break;
         case VectorFP:
-            LOG_CRITICAL(Service_ERR, "FPEXC: 0x%08X", errtype.fpexc);
-            LOG_CRITICAL(Service_ERR, "FINST: 0x%08X", errtype.finst);
-            LOG_CRITICAL(Service_ERR, "FINST2: 0x%08X", errtype.finst2);
+            LOG_CRITICAL(Service_ERR, "FPEXC: {:#08X}", errtype.fpexc);
+            LOG_CRITICAL(Service_ERR, "FINST: {:#08X}", errtype.finst);
+            LOG_CRITICAL(Service_ERR, "FINST2: {:#08X}", errtype.finst2);
             break;
         }
         break;
@@ -157,18 +157,18 @@ static void ThrowFatalError(Service::Interface* self) {
     case ErrSpecifier4:
     {
         const auto& errtype = errinfo->errtype4;
-        LOG_CRITICAL(Service_ERR, "PID: 0x%08X_0x%08X", errtype.pid_low, errtype.pid_high);
-        LOG_CRITICAL(Service_ERR, "REV: %d", errtype.rev_low | (errtype.rev_high << 16));
-        LOG_CRITICAL(Service_ERR, "AID: 0x%08X_0x%08X", errtype.aid_low, errtype.aid_high);
+        LOG_CRITICAL(Service_ERR, "PID: {:#08X}_{:#08X}", errtype.pid_low, errtype.pid_high);
+        LOG_CRITICAL(Service_ERR, "REV: {}", errtype.rev_low | (errtype.rev_high << 16));
+        LOG_CRITICAL(Service_ERR, "AID: {:#08X}_{:#08X}", errtype.aid_low, errtype.aid_high);
 
-        LOG_CRITICAL(Service_ERR, "RSL: 0x%08X", errtype.result_code.raw);
-        LOG_CRITICAL(Service_ERR, "  Level: %u",   errtype.result_code.level.Value());
-        LOG_CRITICAL(Service_ERR, "  Summary: %u", errtype.result_code.summary.Value());
-        LOG_CRITICAL(Service_ERR, "  Module: %u",  errtype.result_code.module.Value());
-        LOG_CRITICAL(Service_ERR, "  Desc: %u",    errtype.result_code.description.Value());
+        LOG_CRITICAL(Service_ERR, "RSL: {:#08X}", errtype.result_code.raw);
+        LOG_CRITICAL(Service_ERR, "  Level: {}",   errtype.result_code.level.Value());
+        LOG_CRITICAL(Service_ERR, "  Summary: {}", errtype.result_code.summary.Value());
+        LOG_CRITICAL(Service_ERR, "  Module: {}",  errtype.result_code.module.Value());
+        LOG_CRITICAL(Service_ERR, "  Desc: {}",    errtype.result_code.description.Value());
 
-        LOG_CRITICAL(Service_ERR, "%s", errtype.debug_string1);
-        LOG_CRITICAL(Service_ERR, "%s", errtype.debug_string2);
+        LOG_CRITICAL(Service_ERR, "{}", errtype.debug_string1);
+        LOG_CRITICAL(Service_ERR, "{}", errtype.debug_string2);
         break;
     }
     }

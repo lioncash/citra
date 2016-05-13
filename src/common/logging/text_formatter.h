@@ -4,11 +4,7 @@
 
 #pragma once
 
-#include <cstddef>
-
 namespace Log {
-
-struct Entry;
 
 /**
  * Attempts to trim an arbitrary prefix from `path`, leaving only the part starting at `root`. It's
@@ -21,12 +17,5 @@ struct Entry;
  * @return A pointer to the same string passed as `path`, but starting at the trimmed portion
  */
 const char* TrimSourcePath(const char* path, const char* root = "src");
-
-/// Formats a log entry into the provided text buffer.
-void FormatLogMessage(const Entry& entry, char* out_text, size_t text_len);
-/// Formats and prints a log entry to stderr.
-void PrintMessage(const Entry& entry);
-/// Prints the same message as `PrintMessage`, but colored acoording to the severity level.
-void PrintColoredMessage(const Entry& entry);
 
 }

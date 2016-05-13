@@ -92,7 +92,8 @@ static void SetInputFormat(Service::Interface* self) {
     cmd_buff[0] = IPC::MakeHeader(0x1, 1, 0);
     cmd_buff[1] = RESULT_SUCCESS.raw;
 
-    LOG_DEBUG(Service_Y2R, "called input_format=%hhu", conversion.input_format);
+    LOG_DEBUG(Service_Y2R, "called input_format={}",
+              static_cast<u32>(conversion.input_format));
 }
 
 static void GetInputFormat(Service::Interface* self) {
@@ -102,7 +103,8 @@ static void GetInputFormat(Service::Interface* self) {
     cmd_buff[1] = RESULT_SUCCESS.raw;
     cmd_buff[2] = static_cast<u32>(conversion.input_format);
 
-    LOG_DEBUG(Service_Y2R, "called input_format=%hhu", conversion.input_format);
+    LOG_DEBUG(Service_Y2R, "called input_format={}",
+              static_cast<u32>(conversion.input_format));
 }
 
 static void SetOutputFormat(Service::Interface* self) {
@@ -113,7 +115,8 @@ static void SetOutputFormat(Service::Interface* self) {
     cmd_buff[0] = IPC::MakeHeader(0x3, 1, 0);
     cmd_buff[1] = RESULT_SUCCESS.raw;
 
-    LOG_DEBUG(Service_Y2R, "called output_format=%hhu", conversion.output_format);
+    LOG_DEBUG(Service_Y2R, "called output_format={}",
+              static_cast<u32>(conversion.output_format));
 }
 
 static void GetOutputFormat(Service::Interface* self) {
@@ -123,7 +126,8 @@ static void GetOutputFormat(Service::Interface* self) {
     cmd_buff[1] = RESULT_SUCCESS.raw;
     cmd_buff[2] = static_cast<u32>(conversion.output_format);
 
-    LOG_DEBUG(Service_Y2R, "called output_format=%hhu", conversion.output_format);
+    LOG_DEBUG(Service_Y2R, "called output_format={}",
+              static_cast<u32>(conversion.output_format));
 }
 
 static void SetRotation(Service::Interface* self) {
@@ -134,7 +138,8 @@ static void SetRotation(Service::Interface* self) {
     cmd_buff[0] = IPC::MakeHeader(0x5, 1, 0);
     cmd_buff[1] = RESULT_SUCCESS.raw;
 
-    LOG_DEBUG(Service_Y2R, "called rotation=%hhu", conversion.rotation);
+    LOG_DEBUG(Service_Y2R, "called rotation={}",
+              static_cast<u32>(conversion.rotation));
 }
 
 static void GetRotation(Service::Interface* self) {
@@ -144,7 +149,8 @@ static void GetRotation(Service::Interface* self) {
     cmd_buff[1] = RESULT_SUCCESS.raw;
     cmd_buff[2] = static_cast<u32>(conversion.rotation);
 
-    LOG_DEBUG(Service_Y2R, "called rotation=%hhu", conversion.rotation);
+    LOG_DEBUG(Service_Y2R, "called rotation={}",
+              static_cast<u32>(conversion.rotation));
 }
 
 static void SetBlockAlignment(Service::Interface* self) {
@@ -155,7 +161,8 @@ static void SetBlockAlignment(Service::Interface* self) {
     cmd_buff[0] = IPC::MakeHeader(0x7, 1, 0);
     cmd_buff[1] = RESULT_SUCCESS.raw;
 
-    LOG_DEBUG(Service_Y2R, "called block_alignment=%hhu", conversion.block_alignment);
+    LOG_DEBUG(Service_Y2R, "called block_alignment={}",
+              static_cast<u32>(conversion.block_alignment));
 }
 
 static void GetBlockAlignment(Service::Interface* self) {
@@ -165,7 +172,8 @@ static void GetBlockAlignment(Service::Interface* self) {
     cmd_buff[1] = RESULT_SUCCESS.raw;
     cmd_buff[2] = static_cast<u32>(conversion.block_alignment);
 
-    LOG_DEBUG(Service_Y2R, "called block_alignment=%hhu", conversion.block_alignment);
+    LOG_DEBUG(Service_Y2R, "called block_alignment={}",
+              static_cast<u32>(conversion.block_alignment));
 }
 
 /**
@@ -294,8 +302,8 @@ static void SetSendingY(Service::Interface* self) {
     cmd_buff[0] = IPC::MakeHeader(0x10, 1, 0);
     cmd_buff[1] = RESULT_SUCCESS.raw;
 
-    LOG_DEBUG(Service_Y2R, "called image_size=0x%08X, transfer_unit=%hu, transfer_stride=%hu, src_process_handle=0x%08X",
-            conversion.src_Y.image_size, conversion.src_Y.transfer_unit, conversion.src_Y.gap, cmd_buff[6]);
+    LOG_DEBUG(Service_Y2R, "called image_size={:#08X}, transfer_unit={}, transfer_stride={}, src_process_handle={:#08X}",
+              conversion.src_Y.image_size, conversion.src_Y.transfer_unit, conversion.src_Y.gap, cmd_buff[6]);
 }
 
 static void SetSendingU(Service::Interface* self) {
@@ -309,8 +317,8 @@ static void SetSendingU(Service::Interface* self) {
     cmd_buff[0] = IPC::MakeHeader(0x11, 1, 0);
     cmd_buff[1] = RESULT_SUCCESS.raw;
 
-    LOG_DEBUG(Service_Y2R, "called image_size=0x%08X, transfer_unit=%hu, transfer_stride=%hu, src_process_handle=0x%08X",
-            conversion.src_U.image_size, conversion.src_U.transfer_unit, conversion.src_U.gap, cmd_buff[6]);
+    LOG_DEBUG(Service_Y2R, "called image_size={:#08X}, transfer_unit={}, transfer_stride={}, src_process_handle={:#08X}",
+              conversion.src_U.image_size, conversion.src_U.transfer_unit, conversion.src_U.gap, cmd_buff[6]);
 }
 
 static void SetSendingV(Service::Interface* self) {
@@ -324,8 +332,8 @@ static void SetSendingV(Service::Interface* self) {
     cmd_buff[0] = IPC::MakeHeader(0x12, 1, 0);
     cmd_buff[1] = RESULT_SUCCESS.raw;
 
-    LOG_DEBUG(Service_Y2R, "called image_size=0x%08X, transfer_unit=%hu, transfer_stride=%hu, src_process_handle=0x%08X",
-            conversion.src_V.image_size, conversion.src_V.transfer_unit, conversion.src_V.gap, cmd_buff[6]);
+    LOG_DEBUG(Service_Y2R, "called image_size={:#08X}, transfer_unit={}, transfer_stride={}, src_process_handle={:#08X}",
+              conversion.src_V.image_size, conversion.src_V.transfer_unit, conversion.src_V.gap, cmd_buff[6]);
 }
 
 static void SetSendingYUYV(Service::Interface* self) {
@@ -339,8 +347,8 @@ static void SetSendingYUYV(Service::Interface* self) {
     cmd_buff[0] = IPC::MakeHeader(0x13, 1, 0);
     cmd_buff[1] = RESULT_SUCCESS.raw;
 
-    LOG_DEBUG(Service_Y2R, "called image_size=0x%08X, transfer_unit=%hu, transfer_stride=%hu, src_process_handle=0x%08X",
-            conversion.src_YUYV.image_size, conversion.src_YUYV.transfer_unit, conversion.src_YUYV.gap, cmd_buff[6]);
+    LOG_DEBUG(Service_Y2R, "called image_size={:#08X}, transfer_unit={}, transfer_stride={}, src_process_handle={:#08X}",
+              conversion.src_YUYV.image_size, conversion.src_YUYV.transfer_unit, conversion.src_YUYV.gap, cmd_buff[6]);
 }
 
 /**
@@ -418,8 +426,8 @@ static void SetReceiving(Service::Interface* self) {
     cmd_buff[0] = IPC::MakeHeader(0x18, 1, 0);
     cmd_buff[1] = RESULT_SUCCESS.raw;
 
-    LOG_DEBUG(Service_Y2R, "called image_size=0x%08X, transfer_unit=%hu, transfer_stride=%hu, dst_process_handle=0x%08X",
-            conversion.dst.image_size, conversion.dst.transfer_unit, conversion.dst.gap, cmd_buff[6]);
+    LOG_DEBUG(Service_Y2R, "called image_size={:#08X}, transfer_unit={}, transfer_stride={}, dst_process_handle={:#08X}",
+              conversion.dst.image_size, conversion.dst.transfer_unit, conversion.dst.gap, cmd_buff[6]);
 }
 
 /**
@@ -444,7 +452,7 @@ static void SetInputLineWidth(Service::Interface* self) {
     cmd_buff[0] = IPC::MakeHeader(0x1A, 1, 0);
     cmd_buff[1] = conversion.SetInputLineWidth(cmd_buff[1]).raw;
 
-    LOG_DEBUG(Service_Y2R, "called input_line_width=%u", cmd_buff[1]);
+    LOG_DEBUG(Service_Y2R, "called input_line_width={}", cmd_buff[1]);
 }
 
 static void GetInputLineWidth(Service::Interface* self) {
@@ -454,7 +462,7 @@ static void GetInputLineWidth(Service::Interface* self) {
     cmd_buff[1] = RESULT_SUCCESS.raw;
     cmd_buff[2] = conversion.input_line_width;
 
-    LOG_DEBUG(Service_Y2R, "called input_line_width=%u", conversion.input_line_width);
+    LOG_DEBUG(Service_Y2R, "called input_line_width={}", conversion.input_line_width);
 }
 
 static void SetInputLines(Service::Interface* self) {
@@ -463,7 +471,7 @@ static void SetInputLines(Service::Interface* self) {
     cmd_buff[0] = IPC::MakeHeader(0x1C, 1, 0);
     cmd_buff[1] = conversion.SetInputLines(cmd_buff[1]).raw;
 
-    LOG_DEBUG(Service_Y2R, "called input_lines=%u", cmd_buff[1]);
+    LOG_DEBUG(Service_Y2R, "called input_lines={}", cmd_buff[1]);
 }
 
 static void GetInputLines(Service::Interface* self) {
@@ -473,7 +481,7 @@ static void GetInputLines(Service::Interface* self) {
     cmd_buff[1] = RESULT_SUCCESS.raw;
     cmd_buff[2] = static_cast<u32>(conversion.input_lines);
 
-    LOG_DEBUG(Service_Y2R, "called input_lines=%u", conversion.input_lines);
+    LOG_DEBUG(Service_Y2R, "called input_lines={}", conversion.input_lines);
 }
 
 static void SetCoefficient(Service::Interface* self) {
@@ -485,7 +493,7 @@ static void SetCoefficient(Service::Interface* self) {
     cmd_buff[0] = IPC::MakeHeader(0x1E, 1, 0);
     cmd_buff[1] = RESULT_SUCCESS.raw;
 
-    LOG_DEBUG(Service_Y2R, "called coefficients=[%hX, %hX, %hX, %hX, %hX, %hX, %hX, %hX]",
+    LOG_DEBUG(Service_Y2R, "called coefficients=[{:X}, {:X}, {:X}, {:X}, {:X}, {:X}, {:X}, {:X}]",
             coefficients[0], coefficients[1], coefficients[2], coefficients[3],
             coefficients[4], coefficients[5], coefficients[6], coefficients[7]);
 }
@@ -508,7 +516,7 @@ static void SetStandardCoefficient(Service::Interface* self) {
     cmd_buff[0] = IPC::MakeHeader(0x20, 1, 0);
     cmd_buff[1] = conversion.SetStandardCoefficient((StandardCoefficient)index).raw;
 
-    LOG_DEBUG(Service_Y2R, "called standard_coefficient=%u", index);
+    LOG_DEBUG(Service_Y2R, "called standard_coefficient={}", index);
 }
 
 static void GetStandardCoefficient(Service::Interface* self) {
@@ -521,12 +529,12 @@ static void GetStandardCoefficient(Service::Interface* self) {
         cmd_buff[1] = RESULT_SUCCESS.raw;
         std::memcpy(&cmd_buff[2], &standard_coefficients[index], sizeof(CoefficientSet));
 
-        LOG_DEBUG(Service_Y2R, "called standard_coefficient=%u ", index);
+        LOG_DEBUG(Service_Y2R, "called standard_coefficient={}.", index);
     } else {
         cmd_buff[0] = IPC::MakeHeader(0x21, 1, 0);
         cmd_buff[1] = -1; // TODO(bunnei): Identify the correct error code for this
 
-        LOG_ERROR(Service_Y2R, "called standard_coefficient=%u  The argument is invalid!", index);
+        LOG_ERROR(Service_Y2R, "called standard_coefficient={}. The argument is invalid!", index);
     }
 }
 
@@ -538,7 +546,7 @@ static void SetAlpha(Service::Interface* self) {
     cmd_buff[0] = IPC::MakeHeader(0x22, 1, 0);
     cmd_buff[1] = RESULT_SUCCESS.raw;
 
-    LOG_DEBUG(Service_Y2R, "called alpha=%hu", conversion.alpha);
+    LOG_DEBUG(Service_Y2R, "called alpha={}", conversion.alpha);
 }
 
 static void GetAlpha(Service::Interface* self) {
@@ -548,7 +556,7 @@ static void GetAlpha(Service::Interface* self) {
     cmd_buff[1] = RESULT_SUCCESS.raw;
     cmd_buff[2] = conversion.alpha;
 
-    LOG_DEBUG(Service_Y2R, "called alpha=%hu", conversion.alpha);
+    LOG_DEBUG(Service_Y2R, "called alpha={}", conversion.alpha);
 }
 
 static void SetDitheringWeightParams(Service::Interface* self) {
@@ -648,10 +656,17 @@ cleanup:
     cmd_buff[0] = IPC::MakeHeader(0x29, 1, 0);
     cmd_buff[1] = result.raw;
 
-    LOG_DEBUG(Service_Y2R, "called input_format=%hhu output_format=%hhu rotation=%hhu block_alignment=%hhu "
-            "input_line_width=%hu input_lines=%hu standard_coefficient=%hhu reserved=%hhu alpha=%hX",
-            params->input_format, params->output_format, params->rotation, params->block_alignment,
-            params->input_line_width, params->input_lines, params->standard_coefficient, params->padding, params->alpha);
+    LOG_DEBUG(Service_Y2R, "called input_format={} output_format={} rotation={} block_alignment={} "
+              "input_line_width={} input_lines={} standard_coefficient={} reserved={} alpha={:X}",
+              static_cast<u32>(params->input_format),
+              static_cast<u32>(params->output_format),
+              static_cast<u32>(params->rotation),
+              static_cast<u32>(params->block_alignment),
+              params->input_line_width,
+              params->input_lines,
+              static_cast<u32>(params->standard_coefficient),
+              params->padding,
+              params->alpha);
 }
 
 static void PingProcess(Service::Interface* self) {

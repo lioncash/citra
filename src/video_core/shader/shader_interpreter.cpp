@@ -374,7 +374,7 @@ void RunInterpreter(UnitState<Debug>& state) {
                             break;
 
                         default:
-                            LOG_ERROR(HW_GPU, "Unknown compare mode %x", static_cast<int>(op));
+                            LOG_ERROR(HW_GPU, "Unknown compare mode {:x}", static_cast<int>(op));
                             break;
                     }
                 }
@@ -418,8 +418,10 @@ void RunInterpreter(UnitState<Debug>& state) {
             }
 
             default:
-                LOG_ERROR(HW_GPU, "Unhandled arithmetic instruction: 0x%02x (%s): 0x%08x",
-                          (int)instr.opcode.Value().EffectiveOpCode(), instr.opcode.Value().GetInfo().name, instr.hex);
+                    LOG_ERROR(HW_GPU, "Unhandled arithmetic instruction: {:#02x} ({}): {:#08x}",
+                              static_cast<int>(instr.opcode.Value().EffectiveOpCode()),
+                              instr.opcode.Value().GetInfo().name,
+                              instr.hex);
                 DEBUG_ASSERT(false);
                 break;
             }
@@ -499,8 +501,10 @@ void RunInterpreter(UnitState<Debug>& state) {
                 }
                 Record<DebugDataRecord::DEST_OUT>(state.debug, iteration, dest);
             } else {
-                LOG_ERROR(HW_GPU, "Unhandled multiply-add instruction: 0x%02x (%s): 0x%08x",
-                          (int)instr.opcode.Value().EffectiveOpCode(), instr.opcode.Value().GetInfo().name, instr.hex);
+                LOG_ERROR(HW_GPU, "Unhandled multiply-add instruction: {:#02x} ({}): {:#08x}",
+                          static_cast<int>(instr.opcode.Value().EffectiveOpCode()),
+                          instr.opcode.Value().GetInfo().name,
+                          instr.hex);
             }
             break;
         }
@@ -632,8 +636,10 @@ void RunInterpreter(UnitState<Debug>& state) {
             }
 
             default:
-                LOG_ERROR(HW_GPU, "Unhandled instruction: 0x%02x (%s): 0x%08x",
-                          (int)instr.opcode.Value().EffectiveOpCode(), instr.opcode.Value().GetInfo().name, instr.hex);
+                LOG_ERROR(HW_GPU, "Unhandled instruction: {:#02x} ({}): {:#08x}",
+                          static_cast<int>(instr.opcode.Value().EffectiveOpCode()),
+                          instr.opcode.Value().GetInfo().name,
+                          instr.hex);
                 break;
             }
 

@@ -46,8 +46,8 @@ void InitializeIrNopShared(Interface* self) {
 
     cmd_buff[1] = RESULT_SUCCESS.raw;
 
-    LOG_WARNING(Service_IR, "(STUBBED) called, transfer_buff_size=%d, recv_buff_size=%d, "
-                "unk1=%d, send_buff_size=%d, unk2=%d, baud_rate=%u, handle=0x%08X",
+    LOG_WARNING(Service_IR, "(STUBBED) called, transfer_buff_size=%d, recv_buff_size={}, "
+                "unk1={}, send_buff_size={}, unk2={}, baud_rate={}, handle={:#08X}",
                 transfer_buff_size, recv_buff_size, unk1, send_buff_size, unk2, baud_rate, handle);
 }
 

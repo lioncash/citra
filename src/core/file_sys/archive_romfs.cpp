@@ -37,7 +37,7 @@ ResultCode ArchiveFactory_RomFS::Format(const Path& path, const FileSys::Archive
 
 ResultVal<ArchiveFormatInfo> ArchiveFactory_RomFS::GetFormatInfo(const Path& path) const {
     // TODO(Subv): Implement
-    LOG_ERROR(Service_FS, "Unimplemented GetFormatInfo archive %s", GetName().c_str());
+    LOG_ERROR(Service_FS, "Unimplemented GetFormatInfo archive {}", GetName());
     return ResultCode(-1);
 }
 

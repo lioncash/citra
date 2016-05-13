@@ -65,7 +65,8 @@ static void DrawPixel(int x, int y, const Math::Vec4<u8>& color) {
         break;
 
     default:
-        LOG_CRITICAL(Render_Software, "Unknown framebuffer color format %x", framebuffer.color_format.Value());
+        LOG_CRITICAL(Render_Software, "Unknown framebuffer color format {:x}",
+                     static_cast<u32>(framebuffer.color_format.Value()));
         UNIMPLEMENTED();
     }
 }
@@ -98,7 +99,8 @@ static const Math::Vec4<u8> GetPixel(int x, int y) {
         return Color::DecodeRGBA4(src_pixel);
 
     default:
-        LOG_CRITICAL(Render_Software, "Unknown framebuffer color format %x", framebuffer.color_format.Value());
+        LOG_CRITICAL(Render_Software, "Unknown framebuffer color format {:x}",
+                     static_cast<u32>(framebuffer.color_format.Value()));
         UNIMPLEMENTED();
     }
 
@@ -127,7 +129,8 @@ static u32 GetDepth(int x, int y) {
         case Regs::DepthFormat::D24S8:
             return Color::DecodeD24S8(src_pixel).x;
         default:
-            LOG_CRITICAL(HW_GPU, "Unimplemented depth format %u", framebuffer.depth_format);
+            LOG_CRITICAL(HW_GPU, "Unimplemented depth format {}",
+                         static_cast<u32>(framebuffer.depth_format));
             UNIMPLEMENTED();
             return 0;
     }
@@ -152,7 +155,8 @@ static u8 GetStencil(int x, int y) {
             return Color::DecodeD24S8(src_pixel).y;
 
         default:
-            LOG_WARNING(HW_GPU, "GetStencil called for function which doesn't have a stencil component (format %u)", framebuffer.depth_format);
+            LOG_WARNING(HW_GPU, "GetStencil called for function which doesn't have a stencil component (format {})",
+                        static_cast<u32>(framebuffer.depth_format));
             return 0;
     }
 }
@@ -185,7 +189,8 @@ static void SetDepth(int x, int y, u32 value) {
             break;
 
         default:
-            LOG_CRITICAL(HW_GPU, "Unimplemented depth format %u", framebuffer.depth_format);
+            LOG_CRITICAL(HW_GPU, "Unimplemented depth format {}",
+                         static_cast<u32>(framebuffer.depth_format));
             UNIMPLEMENTED();
             break;
     }
@@ -216,7 +221,8 @@ static void SetStencil(int x, int y, u8 value) {
             break;
 
         default:
-            LOG_CRITICAL(HW_GPU, "Unimplemented depth format %u", framebuffer.depth_format);
+            LOG_CRITICAL(HW_GPU, "Unimplemented depth format {}",
+                         static_cast<u32>(framebuffer.depth_format));
             UNIMPLEMENTED();
             break;
     }
@@ -251,7 +257,7 @@ static u8 PerformStencilAction(Regs::StencilAction action, u8 old_stencil, u8 re
         return old_stencil - 1;
 
     default:
-        LOG_CRITICAL(HW_GPU, "Unknown stencil action %x", (int)action);
+        LOG_CRITICAL(HW_GPU, "Unknown stencil action {}", (int)action);
         UNIMPLEMENTED();
         return 0;
     }
@@ -459,7 +465,7 @@ static void ProcessTriangleInternal(const Shader::OutputVertex& v0,
                     }
                     default:
                         // TODO: Change to LOG_ERROR when more types are handled.
-                        LOG_DEBUG(HW_GPU, "Unhandled texture type %x", (int)texture.config.type);
+                        LOG_DEBUG(HW_GPU, "Unhandled texture type {:x}", texture.config.type.Value());
                         UNIMPLEMENTED();
                         break;
                     }
@@ -491,7 +497,7 @@ static void ProcessTriangleInternal(const Shader::OutputVertex& v0,
                         }
 
                         default:
-                            LOG_ERROR(HW_GPU, "Unknown texture coordinate wrapping mode %x", (int)mode);
+                            LOG_ERROR(HW_GPU, "Unknown texture coordinate wrapping mode {:x}", (int)mode);
                             UNIMPLEMENTED();
                             return 0;
                     }
@@ -571,7 +577,7 @@ static void ProcessTriangleInternal(const Shader::OutputVertex& v0,
                         return combiner_output;
 
                     default:
-                        LOG_ERROR(HW_GPU, "Unknown color combiner source %d", (int)source);
+                        LOG_ERROR(HW_GPU, "Unknown color combiner source {}", (int)source);
                         UNIMPLEMENTED();
                         return {0, 0, 0, 0};
                     }
@@ -709,7 +715,7 @@ static void ProcessTriangleInternal(const Shader::OutputVertex& v0,
                         return { (u8)result, (u8)result, (u8)result };
                     }
                     default:
-                        LOG_ERROR(HW_GPU, "Unknown color combiner operation %d", (int)op);
+                        LOG_ERROR(HW_GPU, "Unknown color combiner operation {}", (int)op);
                         UNIMPLEMENTED();
                         return {0, 0, 0};
                     }
@@ -746,7 +752,7 @@ static void ProcessTriangleInternal(const Shader::OutputVertex& v0,
                         return (std::min(255, (input[0] + input[1])) * input[2]) / 255;
 
                     default:
-                        LOG_ERROR(HW_GPU, "Unknown alpha combiner operation %d", (int)op);
+                        LOG_ERROR(HW_GPU, "Unknown alpha combiner operation {}", static_cast<int>(op));
                         UNIMPLEMENTED();
                         return 0;
                     }
@@ -1031,7 +1037,8 @@ static void ProcessTriangleInternal(const Shader::OutputVertex& v0,
                         return std::min(combiner_output.a(), static_cast<u8>(255 - dest.a()));
 
                     default:
-                        LOG_CRITICAL(HW_GPU, "Unknown blend factor %x", factor);
+                        LOG_CRITICAL(HW_GPU, "Unknown blend factor {:x}",
+                                     static_cast<u32>(factor));
                         UNIMPLEMENTED();
                         break;
                     }
@@ -1078,7 +1085,8 @@ static void ProcessTriangleInternal(const Shader::OutputVertex& v0,
                         break;
 
                     default:
-                        LOG_CRITICAL(HW_GPU, "Unknown RGB blend equation %x", equation);
+                        LOG_CRITICAL(HW_GPU, "Unknown RGB blend equation {:x}",
+                                     static_cast<u32>(equation));
                         UNIMPLEMENTED();
                     }
 

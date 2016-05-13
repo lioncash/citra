@@ -76,11 +76,11 @@ static void TimerCallback(u64 timer_handle, int cycles_late) {
     SharedPtr<Timer> timer = timer_callback_handle_table.Get<Timer>(static_cast<Handle>(timer_handle));
 
     if (timer == nullptr) {
-        LOG_CRITICAL(Kernel, "Callback fired for invalid timer %08" PRIx64, timer_handle);
+        LOG_CRITICAL(Kernel, "Callback fired for invalid timer {:08x}", timer_handle);
         return;
     }
 
-    LOG_TRACE(Kernel, "Timer %08" PRIx64 " fired", timer_handle);
+    LOG_TRACE(Kernel, "Timer {:08x} fired", timer_handle);
 
     timer->signaled = true;
 

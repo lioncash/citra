@@ -96,7 +96,7 @@ void GetCountryCodeString(Service::Interface* self) {
     u32 country_code_id = cmd_buff[1];
 
     if (country_code_id >= country_codes.size() || 0 == country_codes[country_code_id]) {
-        LOG_ERROR(Service_CFG, "requested country code id=%d is invalid", country_code_id);
+        LOG_ERROR(Service_CFG, "requested country code id={} is invalid", country_code_id);
         cmd_buff[1] = ResultCode(ErrorDescription::NotFound, ErrorModule::Config, ErrorSummary::WrongArgument, ErrorLevel::Permanent).raw;
         return;
     }
@@ -121,7 +121,7 @@ void GetCountryCodeID(Service::Interface* self) {
     }
 
     if (0 == country_code_id) {
-        LOG_ERROR(Service_CFG, "requested country code name=%c%c is invalid", country_code & 0xff, country_code >> 8);
+        LOG_ERROR(Service_CFG, "requested country code name={:c}{:c} is invalid", country_code & 0xff, country_code >> 8);
         cmd_buff[1] = ResultCode(ErrorDescription::NotFound, ErrorModule::Config, ErrorSummary::WrongArgument, ErrorLevel::Permanent).raw;
         cmd_buff[2] = 0xFFFF;
         return;
@@ -146,7 +146,7 @@ void GenHashConsoleUnique(Service::Interface* self) {
     cmd_buff[2] = 0x33646D6F ^ (app_id_salt & 0xFFFFF); // 3dmoo hash
     cmd_buff[3] = 0x6F534841 ^ (app_id_salt & 0xFFFFF);
 
-    LOG_WARNING(Service_CFG, "(STUBBED) called app_id_salt=0x%X", app_id_salt);
+    LOG_WARNING(Service_CFG, "(STUBBED) called app_id_salt={:#X}", app_id_salt);
 }
 
 void GetRegionCanadaUSA(Service::Interface* self) {
@@ -235,12 +235,12 @@ ResultCode GetConfigInfoBlock(u32 block_id, u32 size, u32 flag, u8* output) {
         });
 
     if (itr == std::end(config->block_entries)) {
-        LOG_ERROR(Service_CFG, "Config block 0x%X with flags %u and size %u was not found", block_id, flag, size);
+        LOG_ERROR(Service_CFG, "Config block {:#X} with flags {} and size {} was not found", block_id, flag, size);
         return ResultCode(ErrorDescription::NotFound, ErrorModule::Config, ErrorSummary::WrongArgument, ErrorLevel::Permanent);
     }
 
     if (itr->size != size) {
-        LOG_ERROR(Service_CFG, "Invalid size %u for config block 0x%X with flags %u", size, block_id, flag);
+        LOG_ERROR(Service_CFG, "Invalid size {} for config block {:#X} with flags {}", size, block_id, flag);
         return ResultCode(ErrorDescription::InvalidSize, ErrorModule::Config, ErrorSummary::WrongArgument, ErrorLevel::Permanent);
     }
 

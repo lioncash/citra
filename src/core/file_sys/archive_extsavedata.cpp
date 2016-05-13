@@ -59,7 +59,7 @@ Path ConstructExtDataBinaryPath(u32 media_type, u32 high, u32 low) {
 
 ArchiveFactory_ExtSaveData::ArchiveFactory_ExtSaveData(const std::string& mount_location, bool shared)
         : shared(shared), mount_point(GetExtDataContainerPath(mount_location, shared)) {
-    LOG_INFO(Service_FS, "Directory %s set as base for ExtSaveData.", mount_point.c_str());
+    LOG_INFO(Service_FS, "Directory {} set as base for ExtSaveData.", mount_point);
 }
 
 bool ArchiveFactory_ExtSaveData::Initialize() {

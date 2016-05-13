@@ -184,11 +184,11 @@ void DumpShader(const std::string& filename, const Regs::ShaderConfig& config, c
                     }
                 } catch (const std::out_of_range& ) {
                     DEBUG_ASSERT_MSG(false, "Unknown output attribute mapping");
-                    LOG_ERROR(HW_GPU, "Unknown output attribute mapping: %03x, %03x, %03x, %03x",
-                              (int)output_attributes[i].map_x.Value(),
-                              (int)output_attributes[i].map_y.Value(),
-                              (int)output_attributes[i].map_z.Value(),
-                              (int)output_attributes[i].map_w.Value());
+                    LOG_ERROR(HW_GPU, "Unknown output attribute mapping: {:03x}, {:03x}, {:03x}, {:03x}",
+                              static_cast<int>(output_attributes[i].map_x.Value()),
+                              static_cast<int>(output_attributes[i].map_y.Value()),
+                              static_cast<int>(output_attributes[i].map_z.Value()),
+                              static_cast<int>(output_attributes[i].map_w.Value()));
                 }
             }
         }
@@ -572,7 +572,7 @@ const Math::Vec4<u8> LookupTexture(const u8* source, int x, int y, const Texture
     }
 
     default:
-        LOG_ERROR(HW_GPU, "Unknown texture format: %x", (u32)info.format);
+        LOG_ERROR(HW_GPU, "Unknown texture format: {:x}", static_cast<u32>(info.format));
         DEBUG_ASSERT(false);
         return {};
     }
@@ -644,7 +644,7 @@ void DumpTexture(const Pica::Regs::TextureConfig& texture_config, u8* data) {
 
     // Setup Exception handling
     if (setjmp(png_jmpbuf(png_ptr))) {
-        LOG_ERROR(Debug_GPU, "Error during png creation");
+        LOG_ERROR(Debug_GPU, "Error during PNG creation");
         goto finalise;
     }
 
@@ -796,7 +796,7 @@ void DumpTevStageConfig(const std::array<Pica::Regs::TevStageConfig,6>& stages)
         stage_info += "Stage " + std::to_string(index) + ": " + GetColorCombinerStr(tev_stage) + "   " + GetAlphaCombinerStr(tev_stage) + "\n";
     }
 
-    LOG_TRACE(HW_GPU, "%s", stage_info.c_str());
+    LOG_TRACE(HW_GPU, "{}", stage_info);
 }
 
 } // namespace

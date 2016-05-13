@@ -50,7 +50,7 @@ public:
         }
         }
 
-        UNREACHABLE_MSG("Invalid interrupt type = %zu", static_cast<size_t>(type));
+        UNREACHABLE_MSG("Invalid interrupt type = {}", static_cast<size_t>(type));
     }
 
     bool HasTooManyEventsRegistered() const {
@@ -108,7 +108,7 @@ static void ConvertProcessAddressFromDspDram(Service::Interface* self) {
     // TODO(merry): There is a per-region offset missing in this calculation (that seems to be always zero).
     cmd_buff[2] = (addr << 1) + (Memory::DSP_RAM_VADDR + 0x40000);
 
-    LOG_DEBUG(Service_DSP, "addr=0x%08X", addr);
+    LOG_DEBUG(Service_DSP, "addr={:#08X}", addr);
 }
 
 /**
@@ -143,11 +143,11 @@ static void LoadComponent(Service::Interface* self) {
     ASSERT(Memory::GetPointer(buffer) != nullptr);
     ASSERT(size > 0x37C);
 
-    LOG_INFO(Service_DSP, "Firmware hash: %#" PRIx64, Common::ComputeHash64(Memory::GetPointer(buffer), size));
+    LOG_INFO(Service_DSP, "Firmware hash: {:x}", Common::ComputeHash64(Memory::GetPointer(buffer), size));
     // Some versions of the firmware have the location of DSP structures listed here.
-    LOG_INFO(Service_DSP, "Structures hash: %#" PRIx64, Common::ComputeHash64(Memory::GetPointer(buffer) + 0x340, 60));
+    LOG_INFO(Service_DSP, "Structures hash: {:x}", Common::ComputeHash64(Memory::GetPointer(buffer) + 0x340, 60));
 
-    LOG_WARNING(Service_DSP, "(STUBBED) called size=0x%X, prog_mask=0x%08X, data_mask=0x%08X, buffer=0x%08X",
+    LOG_WARNING(Service_DSP, "(STUBBED) called size={:#X}, prog_mask={:#08X}, data_mask={:#08X}, buffer={:#08X}",
                 size, prog_mask, data_mask, buffer);
 }
 
@@ -190,7 +190,7 @@ static void FlushDataCache(Service::Interface* self) {
     cmd_buff[0] = IPC::MakeHeader(0x13, 1, 0);
     cmd_buff[1] = RESULT_SUCCESS.raw; // No error
 
-    LOG_TRACE(Service_DSP, "called address=0x%08X, size=0x%X, process=0x%08X", address, size, process);
+    LOG_TRACE(Service_DSP, "called address={:#08X}, size={:#X}, process={:#08X}", address, size, process);
 }
 
 /**
@@ -210,7 +210,7 @@ static void RegisterInterruptEvents(Service::Interface* self) {
     u32 event_handle = cmd_buff[4];
 
     ASSERT_MSG(type_index < NUM_INTERRUPT_TYPE && pipe_index < DSP::HLE::NUM_DSP_PIPE,
-               "Invalid type or pipe: type = %u, pipe = %u", type_index, pipe_index);
+               "Invalid type or pipe: type = {}, pipe = {}", type_index, pipe_index);
 
     InterruptType type = static_cast<InterruptType>(cmd_buff[1]);
     DspPipe pipe = static_cast<DspPipe>(cmd_buff[2]);
@@ -221,23 +221,23 @@ static void RegisterInterruptEvents(Service::Interface* self) {
         auto evt = Kernel::g_handle_table.Get<Kernel::Event>(cmd_buff[4]);
 
         if (!evt) {
-            LOG_INFO(Service_DSP, "Invalid event handle! type=%u, pipe=%u, event_handle=0x%08X", type_index, pipe_index, event_handle);
+            LOG_INFO(Service_DSP, "Invalid event handle! type={}, pipe={}, event_handle={:#08X}", type_index, pipe_index, event_handle);
             ASSERT(false); // TODO: This should really be handled at an IPC translation layer.
         }
 
         if (interrupt_events.HasTooManyEventsRegistered()) {
-            LOG_INFO(Service_DSP, "Ran out of space to register interrupts (Attempted to register type=%u, pipe=%u, event_handle=0x%08X)",
+            LOG_INFO(Service_DSP, "Ran out of space to register interrupts (Attempted to register type={}, pipe={}, event_handle={:#08X})",
                      type_index, pipe_index, event_handle);
             cmd_buff[1] = ResultCode(ErrorDescription::InvalidResultValue, ErrorModule::DSP, ErrorSummary::OutOfResource, ErrorLevel::Status).raw;
             return;
         }
 
         interrupt_events.Get(type, pipe) = evt;
-        LOG_INFO(Service_DSP, "Registered type=%u, pipe=%u, event_handle=0x%08X", type_index, pipe_index, event_handle);
+        LOG_INFO(Service_DSP, "Registered type={}, pipe={}, event_handle={:#08X}", type_index, pipe_index, event_handle);
         cmd_buff[1] = RESULT_SUCCESS.raw;
     } else {
         interrupt_events.Get(type, pipe) = nullptr;
-        LOG_INFO(Service_DSP, "Unregistered interrupt=%u, channel=%u, event_handle=0x%08X", type_index, pipe_index, event_handle);
+        LOG_INFO(Service_DSP, "Unregistered interrupt={}, channel={}, event_handle={:#08X}", type_index, pipe_index, event_handle);
         cmd_buff[1] = RESULT_SUCCESS.raw;
     }
 }
@@ -279,13 +279,13 @@ static void WriteProcessPipe(Service::Interface* self) {
     DSP::HLE::DspPipe pipe = static_cast<DSP::HLE::DspPipe>(pipe_index);
 
     if (IPC::StaticBufferDesc(size, 1) != cmd_buff[3]) {
-        LOG_ERROR(Service_DSP, "IPC static buffer descriptor failed validation (0x%X). pipe=%u, size=0x%X, buffer=0x%08X", cmd_buff[3], pipe_index, size, buffer);
+        LOG_ERROR(Service_DSP, "IPC static buffer descriptor failed validation ({:#X}). pipe={}, size={:#X}, buffer={:#08X}", cmd_buff[3], pipe_index, size, buffer);
         cmd_buff[0] = IPC::MakeHeader(0, 1, 0);
         cmd_buff[1] = ResultCode(ErrorDescription::OS_InvalidBufferDescriptor, ErrorModule::OS, ErrorSummary::WrongArgument, ErrorLevel::Permanent).raw;
         return;
     }
 
-    ASSERT_MSG(Memory::GetPointer(buffer) != nullptr, "Invalid Buffer: pipe=%u, size=0x%X, buffer=0x%08X", pipe_index, size, buffer);
+    ASSERT_MSG(Memory::GetPointer(buffer) != nullptr, "Invalid Buffer: pipe={}, size={:#X}, buffer={:#08X}", pipe_index, size, buffer);
 
     std::vector<u8> message(size);
     for (u32 i = 0; i < size; i++) {
@@ -297,7 +297,7 @@ static void WriteProcessPipe(Service::Interface* self) {
     cmd_buff[0] = IPC::MakeHeader(0xD, 1, 0);
     cmd_buff[1] = RESULT_SUCCESS.raw; // No error
 
-    LOG_DEBUG(Service_DSP, "pipe=%u, size=0x%X, buffer=0x%08X", pipe_index, size, buffer);
+    LOG_DEBUG(Service_DSP, "pipe={}, size={:#X}, buffer={:#08X}", pipe_index, size, buffer);
 }
 
 /**
@@ -324,7 +324,7 @@ static void ReadPipeIfPossible(Service::Interface* self) {
 
     DSP::HLE::DspPipe pipe = static_cast<DSP::HLE::DspPipe>(pipe_index);
 
-    ASSERT_MSG(Memory::GetPointer(addr) != nullptr, "Invalid addr: pipe=%u, unknown=0x%08X, size=0x%X, buffer=0x%08X", pipe_index, unknown, size, addr);
+    ASSERT_MSG(Memory::GetPointer(addr) != nullptr, "Invalid addr: pipe={}, unknown={:#08X}, size={:#X}, buffer={:#08X}", pipe_index, unknown, size, addr);
 
     cmd_buff[0] = IPC::MakeHeader(0x10, 1, 2);
     cmd_buff[1] = RESULT_SUCCESS.raw; // No error
@@ -340,7 +340,7 @@ static void ReadPipeIfPossible(Service::Interface* self) {
     cmd_buff[3] = IPC::StaticBufferDesc(size, 0);
     cmd_buff[4] = addr;
 
-    LOG_DEBUG(Service_DSP, "pipe=%u, unknown=0x%08X, size=0x%X, buffer=0x%08X, return cmd_buff[2]=0x%08X", pipe_index, unknown, size, addr, cmd_buff[2]);
+    LOG_DEBUG(Service_DSP, "pipe={}, unknown={:#08X}, size={:#X}, buffer={:#08X}, return cmd_buff[2]={:#08X}", pipe_index, unknown, size, addr, cmd_buff[2]);
 }
 
 /**
@@ -364,7 +364,7 @@ static void ReadPipe(Service::Interface* self) {
 
     DSP::HLE::DspPipe pipe = static_cast<DSP::HLE::DspPipe>(pipe_index);
 
-    ASSERT_MSG(Memory::GetPointer(addr) != nullptr, "Invalid addr: pipe=%u, unknown=0x%08X, size=0x%X, buffer=0x%08X", pipe_index, unknown, size, addr);
+    ASSERT_MSG(Memory::GetPointer(addr) != nullptr, "Invalid addr: pipe={}, unknown={:#08X}, size={:#X}, buffer={:#08X}", pipe_index, unknown, size, addr);
 
     if (DSP::HLE::GetPipeReadableSize(pipe) >= size) {
         std::vector<u8> response = DSP::HLE::PipeRead(pipe, size);
@@ -381,7 +381,7 @@ static void ReadPipe(Service::Interface* self) {
         UNREACHABLE();
     }
 
-    LOG_DEBUG(Service_DSP, "pipe=%u, unknown=0x%08X, size=0x%X, buffer=0x%08X, return cmd_buff[2]=0x%08X", pipe_index, unknown, size, addr, cmd_buff[2]);
+    LOG_DEBUG(Service_DSP, "pipe={}, unknown={:#08X}, size={:#X}, buffer={:#08X}, return cmd_buff[2]={:#08X}", pipe_index, unknown, size, addr, cmd_buff[2]);
 }
 
 /**
@@ -405,7 +405,7 @@ static void GetPipeReadableSize(Service::Interface* self) {
     cmd_buff[1] = RESULT_SUCCESS.raw; // No error
     cmd_buff[2] = static_cast<u32>(DSP::HLE::GetPipeReadableSize(pipe));
 
-    LOG_DEBUG(Service_DSP, "pipe=%u, unknown=0x%08X, return cmd_buff[2]=0x%08X", pipe_index, unknown, cmd_buff[2]);
+    LOG_DEBUG(Service_DSP, "pipe={}, unknown={:#08X}, return cmd_buff[2]={:#08X}", pipe_index, unknown, cmd_buff[2]);
 }
 
 /**
@@ -423,7 +423,7 @@ static void SetSemaphoreMask(Service::Interface* self) {
     cmd_buff[0] = IPC::MakeHeader(0x17, 1, 0);
     cmd_buff[1] = RESULT_SUCCESS.raw; // No error
 
-    LOG_WARNING(Service_DSP, "(STUBBED) called mask=0x%08X", mask);
+    LOG_WARNING(Service_DSP, "(STUBBED) called mask={:#08X}", mask);
 }
 
 /**
@@ -461,7 +461,7 @@ static void RecvData(Service::Interface* self) {
 
     u32 register_number = cmd_buff[1];
 
-    ASSERT_MSG(register_number == 0, "Unknown register_number %u", register_number);
+    ASSERT_MSG(register_number == 0, "Unknown register_number {}", register_number);
 
     // Application reads this after requesting DSP shutdown, to verify the DSP has indeed shutdown or slept.
 
@@ -480,7 +480,7 @@ static void RecvData(Service::Interface* self) {
         break;
     }
 
-    LOG_DEBUG(Service_DSP, "register_number=%u", register_number);
+    LOG_DEBUG(Service_DSP, "register_number={}", register_number);
 }
 
 /**
@@ -499,13 +499,13 @@ static void RecvDataIsReady(Service::Interface* self) {
 
     u32 register_number = cmd_buff[1];
 
-    ASSERT_MSG(register_number == 0, "Unknown register_number %u", register_number);
+    ASSERT_MSG(register_number == 0, "Unknown register_number {}", register_number);
 
     cmd_buff[0] = IPC::MakeHeader(0x2, 2, 0);
     cmd_buff[1] = RESULT_SUCCESS.raw;
     cmd_buff[2] = 1; // Ready to read
 
-    LOG_DEBUG(Service_DSP, "register_number=%u", register_number);
+    LOG_DEBUG(Service_DSP, "register_number={}", register_number);
 }
 
 const Interface::FunctionInfo FunctionTable[] = {

@@ -34,9 +34,9 @@ GLuint LoadProgram(const char* vertex_shader, const char* fragment_shader) {
         std::vector<char> vertex_shader_error(info_log_length);
         glGetShaderInfoLog(vertex_shader_id, info_log_length, nullptr, &vertex_shader_error[0]);
         if (result) {
-            LOG_DEBUG(Render_OpenGL, "%s", &vertex_shader_error[0]);
+            LOG_DEBUG(Render_OpenGL, "{}", &vertex_shader_error[0]);
         } else {
-            LOG_ERROR(Render_OpenGL, "Error compiling vertex shader:\n%s", &vertex_shader_error[0]);
+            LOG_ERROR(Render_OpenGL, "Error compiling vertex shader:\n{}", &vertex_shader_error[0]);
         }
     }
 
@@ -54,9 +54,9 @@ GLuint LoadProgram(const char* vertex_shader, const char* fragment_shader) {
         std::vector<char> fragment_shader_error(info_log_length);
         glGetShaderInfoLog(fragment_shader_id, info_log_length, nullptr, &fragment_shader_error[0]);
         if (result) {
-            LOG_DEBUG(Render_OpenGL, "%s", &fragment_shader_error[0]);
+            LOG_DEBUG(Render_OpenGL, "{}", &fragment_shader_error[0]);
         } else {
-            LOG_ERROR(Render_OpenGL, "Error compiling fragment shader:\n%s", &fragment_shader_error[0]);
+            LOG_ERROR(Render_OpenGL, "Error compiling fragment shader:\n{}", &fragment_shader_error[0]);
         }
     }
 
@@ -77,9 +77,9 @@ GLuint LoadProgram(const char* vertex_shader, const char* fragment_shader) {
         std::vector<char> program_error(info_log_length);
         glGetProgramInfoLog(program_id, info_log_length, nullptr, &program_error[0]);
         if (result) {
-            LOG_DEBUG(Render_OpenGL, "%s", &program_error[0]);
+            LOG_DEBUG(Render_OpenGL, "{}", &program_error[0]);
         } else {
-            LOG_ERROR(Render_OpenGL, "Error linking shader:\n%s", &program_error[0]);
+            LOG_ERROR(Render_OpenGL, "Error linking shader:\n{}", &program_error[0]);
         }
     }
 

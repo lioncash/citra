@@ -30,7 +30,7 @@ void StartCapture(Service::Interface* self) {
     cmd_buff[0] = IPC::MakeHeader(0x1, 1, 0);
     cmd_buff[1] = RESULT_SUCCESS.raw;
 
-    LOG_WARNING(Service_CAM, "(STUBBED) called, port=%d", port);
+    LOG_WARNING(Service_CAM, "(STUBBED) called, port={}", port);
 }
 
 void StopCapture(Service::Interface* self) {
@@ -41,7 +41,7 @@ void StopCapture(Service::Interface* self) {
     cmd_buff[0] = IPC::MakeHeader(0x2, 1, 0);
     cmd_buff[1] = RESULT_SUCCESS.raw;
 
-    LOG_WARNING(Service_CAM, "(STUBBED) called, port=%d", port);
+    LOG_WARNING(Service_CAM, "(STUBBED) called, port={}", port);
 }
 
 void GetVsyncInterruptEvent(Service::Interface* self) {
@@ -54,7 +54,7 @@ void GetVsyncInterruptEvent(Service::Interface* self) {
     cmd_buff[2] = IPC::MoveHandleDesc();
     cmd_buff[3] = Kernel::g_handle_table.Create(vsync_interrupt_error_event).MoveFrom();
 
-    LOG_WARNING(Service_CAM, "(STUBBED) called, port=%d", port);
+    LOG_WARNING(Service_CAM, "(STUBBED) called, port={}", port);
 }
 
 void GetBufferErrorInterruptEvent(Service::Interface* self) {
@@ -67,7 +67,7 @@ void GetBufferErrorInterruptEvent(Service::Interface* self) {
     cmd_buff[2] = IPC::MoveHandleDesc();
     cmd_buff[3] = Kernel::g_handle_table.Create(interrupt_error_event).MoveFrom();
 
-    LOG_WARNING(Service_CAM, "(STUBBED) called, port=%d", port);
+    LOG_WARNING(Service_CAM, "(STUBBED) called, port={}", port);
 }
 
 void SetReceiving(Service::Interface* self) {
@@ -88,8 +88,8 @@ void SetReceiving(Service::Interface* self) {
     cmd_buff[2] = IPC::MoveHandleDesc();
     cmd_buff[3] = Kernel::g_handle_table.Create(completion_event).MoveFrom();
 
-    LOG_WARNING(Service_CAM, "(STUBBED) called, addr=0x%X, port=%d, image_size=%d, trans_unit=%d",
-            dest, port, image_size, trans_unit);
+    LOG_WARNING(Service_CAM, "(STUBBED) called, addr={:#X}, port={}, image_size={}, trans_unit={}",
+                dest, port, image_size, trans_unit);
 }
 
 void SetTransferLines(Service::Interface* self) {
@@ -103,8 +103,8 @@ void SetTransferLines(Service::Interface* self) {
     cmd_buff[0] = IPC::MakeHeader(0x9, 1, 0);
     cmd_buff[1] = RESULT_SUCCESS.raw;
 
-    LOG_WARNING(Service_CAM, "(STUBBED) called, port=%d, lines=%d, width=%d, height=%d",
-            port, transfer_lines, width, height);
+    LOG_WARNING(Service_CAM, "(STUBBED) called, port={}, lines={}, width={}, height={}",
+                port, transfer_lines, width, height);
 }
 
 void GetMaxLines(Service::Interface* self) {
@@ -117,8 +117,8 @@ void GetMaxLines(Service::Interface* self) {
     cmd_buff[1] = RESULT_SUCCESS.raw;
     cmd_buff[2] = TRANSFER_BYTES / (2 * width);
 
-    LOG_WARNING(Service_CAM, "(STUBBED) called, width=%d, height=%d, lines = %d",
-            width, height, cmd_buff[2]);
+    LOG_WARNING(Service_CAM, "(STUBBED) called, width={}, height={}, lines={}",
+                width, height, cmd_buff[2]);
 }
 
 void GetTransferBytes(Service::Interface* self) {
@@ -130,7 +130,7 @@ void GetTransferBytes(Service::Interface* self) {
     cmd_buff[1] = RESULT_SUCCESS.raw;
     cmd_buff[2] = TRANSFER_BYTES;
 
-    LOG_WARNING(Service_CAM, "(STUBBED) called, port=%d", port);
+    LOG_WARNING(Service_CAM, "(STUBBED) called, port={}", port);
 }
 
 void SetTrimming(Service::Interface* self) {
@@ -142,7 +142,7 @@ void SetTrimming(Service::Interface* self) {
     cmd_buff[0] = IPC::MakeHeader(0xE, 1, 0);
     cmd_buff[1] = RESULT_SUCCESS.raw;
 
-    LOG_WARNING(Service_CAM, "(STUBBED) called, port=%d, trim=%d", port, trim);
+    LOG_WARNING(Service_CAM, "(STUBBED) called, port={}, trim={}", port, trim);
 }
 
 void SetTrimmingParamsCenter(Service::Interface* self) {
@@ -157,8 +157,8 @@ void SetTrimmingParamsCenter(Service::Interface* self) {
     cmd_buff[0] = IPC::MakeHeader(0x12, 1, 0);
     cmd_buff[1] = RESULT_SUCCESS.raw;
 
-    LOG_WARNING(Service_CAM, "(STUBBED) called, port=%d, trimW=%d, trimH=%d, camW=%d, camH=%d",
-            port, trimW, trimH, camW, camH);
+    LOG_WARNING(Service_CAM, "(STUBBED) called, port={}, trimW={}, trimH={}, camW={}, camH={}",
+                port, trimW, trimH, camW, camH);
 }
 
 void Activate(Service::Interface* self) {
@@ -169,8 +169,8 @@ void Activate(Service::Interface* self) {
     cmd_buff[0] = IPC::MakeHeader(0x13, 1, 0);
     cmd_buff[1] = RESULT_SUCCESS.raw;
 
-    LOG_WARNING(Service_CAM, "(STUBBED) called, cam_select=%d",
-            cam_select);
+    LOG_WARNING(Service_CAM, "(STUBBED) called, cam_select={}",
+                cam_select);
 }
 
 void FlipImage(Service::Interface* self) {
@@ -183,8 +183,8 @@ void FlipImage(Service::Interface* self) {
     cmd_buff[0] = IPC::MakeHeader(0x1D, 1, 0);
     cmd_buff[1] = RESULT_SUCCESS.raw;
 
-    LOG_WARNING(Service_CAM, "(STUBBED) called, cam_select=%d, flip=%d, context=%d",
-            cam_select, flip, context);
+    LOG_WARNING(Service_CAM, "(STUBBED) called, cam_select={}, flip={}, context={}",
+                cam_select, flip, context);
 }
 
 void SetSize(Service::Interface* self) {
@@ -197,8 +197,8 @@ void SetSize(Service::Interface* self) {
     cmd_buff[0] = IPC::MakeHeader(0x1F, 1, 0);
     cmd_buff[1] = RESULT_SUCCESS.raw;
 
-    LOG_WARNING(Service_CAM, "(STUBBED) called, cam_select=%d, size=%d, context=%d",
-            cam_select, size, context);
+    LOG_WARNING(Service_CAM, "(STUBBED) called, cam_select={}, size={}, context={}",
+                cam_select, size, context);
 }
 
 void SetFrameRate(Service::Interface* self) {
@@ -210,8 +210,8 @@ void SetFrameRate(Service::Interface* self) {
     cmd_buff[0] = IPC::MakeHeader(0x20, 1, 0);
     cmd_buff[1] = RESULT_SUCCESS.raw;
 
-    LOG_WARNING(Service_CAM, "(STUBBED) called, cam_select=%d, frame_rate=%d",
-            cam_select, frame_rate);
+    LOG_WARNING(Service_CAM, "(STUBBED) called, cam_select={}, frame_rate={}",
+                cam_select, frame_rate);
 }
 
 void GetStereoCameraCalibrationData(Service::Interface* self) {
@@ -259,7 +259,7 @@ void PlayShutterSound(Service::Interface* self) {
     cmd_buff[0] = IPC::MakeHeader(0x38, 1, 0);
     cmd_buff[1] = RESULT_SUCCESS.raw;
 
-    LOG_WARNING(Service_CAM, "(STUBBED) called, sound_id=%d", sound_id);
+    LOG_WARNING(Service_CAM, "(STUBBED) called, sound_id={}", sound_id);
 }
 
 void DriverInitialize(Service::Interface* self) {

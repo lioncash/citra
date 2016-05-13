@@ -258,12 +258,11 @@ void OpArg::WriteRest(XEmitter *emit, int extraBytes, X64Reg _operandReg,
 #ifdef ARCHITECTURE_x86_64
         u64 ripAddr = (u64)emit->GetCodePtr() + 4 + extraBytes;
         s64 distance = (s64)offset - (s64)ripAddr;
-        ASSERT_MSG(
-                     (distance < 0x80000000LL &&
-                      distance >=  -0x80000000LL) ||
-                     !warn_64bit_offset,
-                     "WriteRest: op out of range (0x%" PRIx64 " uses 0x%" PRIx64 ")",
-                     ripAddr, offset);
+        ASSERT_MSG((distance < 0x80000000LL &&
+                    distance >=  -0x80000000LL) ||
+                    !warn_64bit_offset,
+                    "WriteRest: op out of range ({:#08x} uses {:#08x})",
+                    ripAddr, offset);
         s32 offs = (s32)distance;
         emit->Write32((u32)offs);
 #else
@@ -400,7 +399,7 @@ void XEmitter::JMP(const u8* addr, bool force5Bytes)
     {
         s64 distance = (s64)(fn - ((u64)code + 2));
         ASSERT_MSG(distance >= -0x80 && distance < 0x80,
-                 "Jump target too far away, needs force5Bytes = true");
+                   "Jump target too far away, needs force5Bytes = true");
         //8 bits will do
         Write8(0xEB);
         Write8((u8)(s8)distance);
@@ -409,9 +408,8 @@ void XEmitter::JMP(const u8* addr, bool force5Bytes)
     {
         s64 distance = (s64)(fn - ((u64)code + 5));
 
-        ASSERT_MSG(
-                     distance >= -0x80000000LL && distance < 0x80000000LL,
-                     "Jump target too far away, needs indirect register");
+        ASSERT_MSG(distance >= -0x80000000LL && distance < 0x80000000LL,
+                   "Jump target too far away, needs indirect register");
         Write8(0xE9);
         Write32((u32)(s32)distance);
     }
@@ -447,10 +445,10 @@ void XEmitter::CALLptr(OpArg arg)
 void XEmitter::CALL(const void* fnptr)
 {
     u64 distance = u64(fnptr) - (u64(code) + 5);
-    ASSERT_MSG(
-                 distance < 0x0000000080000000ULL ||
-                 distance >=  0xFFFFFFFF80000000ULL,
-                 "CALL out of range (%p calls %p)", code, fnptr);
+    ASSERT_MSG(distance < 0x0000000080000000ULL ||
+               distance >=  0xFFFFFFFF80000000ULL,
+               "CALL out of range ({} calls {})",
+               static_cast<void*>(code), fnptr);
     Write8(0xE8);
     Write32(u32(distance));
 }
@@ -513,9 +511,8 @@ void XEmitter::J_CC(CCFlags conditionCode, const u8* addr, bool force5bytes)
     if (distance < -0x80 || distance >= 0x80 || force5bytes)
     {
         distance = (s64)(fn - ((u64)code + 6));
-        ASSERT_MSG(
-                     distance >= -0x80000000LL && distance < 0x80000000LL,
-                     "Jump target too far away, needs indirect register");
+        ASSERT_MSG(distance >= -0x80000000LL && distance < 0x80000000LL,
+                   "Jump target too far away, needs indirect register");
         Write8(0x0F);
         Write8(0x80 + conditionCode);
         Write32((u32)(s32)distance);
@@ -1316,7 +1313,7 @@ void XEmitter::XOR (int bits, const OpArg& a1, const OpArg& a2) {CheckFlags(); W
 void XEmitter::MOV (int bits, const OpArg& a1, const OpArg& a2)
 {
     if (a1.IsSimpleReg() && a2.IsSimpleReg() && a1.GetSimpleReg() == a2.GetSimpleReg())
-        LOG_ERROR(Common, "Redundant MOV @ %p - bug in JIT?", code);
+        LOG_ERROR(Common, "Redundant MOV @ {} - bug in JIT?", static_cast<void*>(code));
     WriteNormalOp(this, bits, nrmMOV, a1, a2);
 }
 void XEmitter::TEST(int bits, const OpArg& a1, const OpArg& a2) {CheckFlags(); WriteNormalOp(this, bits, nrmTEST, a1, a2);}

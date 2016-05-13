@@ -30,7 +30,7 @@ inline GLenum TextureFilterMode(Pica::Regs::TextureConfig::TextureFilter mode) {
 
     // Range check table for input
     if (static_cast<size_t>(mode) >= ARRAY_SIZE(filter_mode_table)) {
-        LOG_CRITICAL(Render_OpenGL, "Unknown texture filtering mode %d", mode);
+        LOG_CRITICAL(Render_OpenGL, "Unknown texture filtering mode {}", static_cast<u32>(mode));
         UNREACHABLE();
 
         return GL_LINEAR;
@@ -40,7 +40,7 @@ inline GLenum TextureFilterMode(Pica::Regs::TextureConfig::TextureFilter mode) {
 
     // Check for dummy values indicating an unknown mode
     if (gl_mode == 0) {
-        LOG_CRITICAL(Render_OpenGL, "Unknown texture filtering mode %d", mode);
+        LOG_CRITICAL(Render_OpenGL, "Unknown texture filtering mode {}", static_cast<u32>(mode));
         UNIMPLEMENTED();
 
         return GL_LINEAR;
@@ -59,7 +59,7 @@ inline GLenum WrapMode(Pica::Regs::TextureConfig::WrapMode mode) {
 
     // Range check table for input
     if (static_cast<size_t>(mode) >= ARRAY_SIZE(wrap_mode_table)) {
-        LOG_CRITICAL(Render_OpenGL, "Unknown texture wrap mode %d", mode);
+        LOG_CRITICAL(Render_OpenGL, "Unknown texture wrap mode {}", static_cast<u32>(mode));
         UNREACHABLE();
 
         return GL_CLAMP_TO_EDGE;
@@ -69,7 +69,7 @@ inline GLenum WrapMode(Pica::Regs::TextureConfig::WrapMode mode) {
 
     // Check for dummy values indicating an unknown mode
     if (gl_mode == 0) {
-        LOG_CRITICAL(Render_OpenGL, "Unknown texture wrap mode %d", mode);
+        LOG_CRITICAL(Render_OpenGL, "Unknown texture wrap mode {}", static_cast<u32>(mode));
         UNIMPLEMENTED();
 
         return GL_CLAMP_TO_EDGE;
@@ -99,7 +99,7 @@ inline GLenum BlendFunc(Pica::Regs::BlendFactor factor) {
 
     // Range check table for input
     if (static_cast<size_t>(factor) >= ARRAY_SIZE(blend_func_table)) {
-        LOG_CRITICAL(Render_OpenGL, "Unknown blend factor %d", factor);
+        LOG_CRITICAL(Render_OpenGL, "Unknown blend factor {}", static_cast<u32>(factor));
         UNREACHABLE();
 
         return GL_ONE;
@@ -130,7 +130,7 @@ inline GLenum LogicOp(Pica::Regs::LogicOp op) {
 
     // Range check table for input
     if (static_cast<size_t>(op) >= ARRAY_SIZE(logic_op_table)) {
-        LOG_CRITICAL(Render_OpenGL, "Unknown logic op %d", op);
+        LOG_CRITICAL(Render_OpenGL, "Unknown logic op {}", static_cast<u32>(op));
         UNREACHABLE();
 
         return GL_COPY;
@@ -153,7 +153,7 @@ inline GLenum CompareFunc(Pica::Regs::CompareFunc func) {
 
     // Range check table for input
     if (static_cast<size_t>(func) >= ARRAY_SIZE(compare_func_table)) {
-        LOG_CRITICAL(Render_OpenGL, "Unknown compare function %d", func);
+        LOG_CRITICAL(Render_OpenGL, "Unknown compare function {}", static_cast<u32>(func));
         UNREACHABLE();
 
         return GL_ALWAYS;
@@ -176,7 +176,7 @@ inline GLenum StencilOp(Pica::Regs::StencilAction action) {
 
     // Range check table for input
     if (static_cast<size_t>(action) >= ARRAY_SIZE(stencil_op_table)) {
-        LOG_CRITICAL(Render_OpenGL, "Unknown stencil op %d", action);
+        LOG_CRITICAL(Render_OpenGL, "Unknown stencil op {}", static_cast<u32>(action));
         UNREACHABLE();
 
         return GL_KEEP;

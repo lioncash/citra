@@ -17,11 +17,9 @@
 #include <getopt.h>
 #endif
 
-#include "common/logging/log.h"
-#include "common/logging/backend.h"
-#include "common/logging/filter.h"
 #include "common/scm_rev.h"
 #include "common/scope_exit.h"
+#include "common/logging/log.h"
 
 #include "core/settings.h"
 #include "core/system.h"
@@ -50,6 +48,8 @@ static void PrintVersion()
 
 /// Application entry point
 int main(int argc, char **argv) {
+    Log::Initialize();
+
     Config config;
     int option_index = 0;
     bool use_gdbstub = Settings::values.use_gdbstub;
@@ -91,9 +91,6 @@ int main(int argc, char **argv) {
         }
     }
 
-    Log::Filter log_filter(Log::Level::Debug);
-    Log::SetFilter(&log_filter);
-
     MicroProfileOnThreadCreate("EmuThread");
     SCOPE_EXIT({ MicroProfileShutdown(); });
 
@@ -102,7 +99,7 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-    log_filter.ParseFilterString(Settings::values.log_filter);
+    Log::ParseFilter(Settings::values.log_filter);
 
     // Apply the command line arguments
     Settings::values.gdbstub_port = gdb_port;
@@ -116,7 +113,8 @@ int main(int argc, char **argv) {
 
     Loader::ResultStatus load_result = Loader::LoadFile(boot_filename);
     if (Loader::ResultStatus::Success != load_result) {
-        LOG_CRITICAL(Frontend, "Failed to load ROM (Error %i)!", load_result);
+        LOG_CRITICAL(Frontend, "Failed to load ROM (Error {})!",
+                     static_cast<u32>(load_result));
         return -1;
     }
 

@@ -78,12 +78,12 @@ static ResultCode WriteHWRegs(u32 base_address, u32 size_in_bytes, const u32* da
     const u32 max_size_in_bytes = 0x80;
 
     if (base_address & 3 || base_address >= 0x420000) {
-        LOG_ERROR(Service_GSP, "Write address was out of range or misaligned! (address=0x%08x, size=0x%08x)",
+        LOG_ERROR(Service_GSP, "Write address was out of range or misaligned! (address={:#08x}, size={:#08x})",
                   base_address, size_in_bytes);
         return ERR_GSP_REGS_OUTOFRANGE_OR_MISALIGNED;
     } else if (size_in_bytes <= max_size_in_bytes) {
         if (size_in_bytes & 3) {
-            LOG_ERROR(Service_GSP, "Misaligned size 0x%08x", size_in_bytes);
+            LOG_ERROR(Service_GSP, "Misaligned size {:#08x}", size_in_bytes);
             return ERR_GSP_REGS_MISALIGNED;
         } else {
             while (size_in_bytes > 0) {
@@ -97,7 +97,7 @@ static ResultCode WriteHWRegs(u32 base_address, u32 size_in_bytes, const u32* da
         }
 
     } else {
-        LOG_ERROR(Service_GSP, "Out of range size 0x%08x", size_in_bytes);
+        LOG_ERROR(Service_GSP, "Out of range size {:#08x}", size_in_bytes);
         return ERR_GSP_REGS_INVALID_SIZE;
     }
 }
@@ -117,12 +117,12 @@ static ResultCode WriteHWRegsWithMask(u32 base_address, u32 size_in_bytes, const
     const u32 max_size_in_bytes = 0x80;
 
     if (base_address & 3 || base_address >= 0x420000) {
-        LOG_ERROR(Service_GSP, "Write address was out of range or misaligned! (address=0x%08x, size=0x%08x)",
+        LOG_ERROR(Service_GSP, "Write address was out of range or misaligned! (address={:#08x}, size={:#08x})",
                   base_address, size_in_bytes);
         return ERR_GSP_REGS_OUTOFRANGE_OR_MISALIGNED;
     } else if (size_in_bytes <= max_size_in_bytes) {
         if (size_in_bytes & 3) {
-            LOG_ERROR(Service_GSP, "Misaligned size 0x%08x", size_in_bytes);
+            LOG_ERROR(Service_GSP, "Misaligned size {:#08x}", size_in_bytes);
             return ERR_GSP_REGS_MISALIGNED;
         } else {
             while (size_in_bytes > 0) {
@@ -145,7 +145,7 @@ static ResultCode WriteHWRegsWithMask(u32 base_address, u32 size_in_bytes, const
         }
 
     } else {
-        LOG_ERROR(Service_GSP, "Out of range size 0x%08x", size_in_bytes);
+        LOG_ERROR(Service_GSP, "Out of range size {:#08x}", size_in_bytes);
         return ERR_GSP_REGS_INVALID_SIZE;
     }
 }
@@ -200,13 +200,13 @@ static void ReadHWRegs(Service::Interface* self) {
 
     // TODO: Return proper error codes
     if (reg_addr + size >= 0x420000) {
-        LOG_ERROR(Service_GSP, "Read address out of range! (address=0x%08x, size=0x%08x)", reg_addr, size);
+        LOG_ERROR(Service_GSP, "Read address out of range! (address={:#08x}, size={:#08x})", reg_addr, size);
         return;
     }
 
     // size should be word-aligned
     if ((size % 4) != 0) {
-        LOG_ERROR(Service_GSP, "Invalid size 0x%08x", size);
+        LOG_ERROR(Service_GSP, "Invalid size {:#08x}", size);
         return;
     }
 
@@ -295,7 +295,7 @@ static void FlushDataCache(Service::Interface* self) {
 
     cmd_buff[1] = RESULT_SUCCESS.raw; // No error
 
-    LOG_DEBUG(Service_GSP, "(STUBBED) called address=0x%08X, size=0x%08X, process=0x%08X",
+    LOG_DEBUG(Service_GSP, "(STUBBED) called address={:#08X}, size={:#08X}, process={:#08X}",
               address, size, process);
 }
 
@@ -312,7 +312,7 @@ static void SetAxiConfigQoSMode(Service::Interface* self) {
 
     cmd_buff[1] = RESULT_SUCCESS.raw; // No error
 
-    LOG_WARNING(Service_GSP, "(STUBBED) called mode=0x%08X", mode);
+    LOG_WARNING(Service_GSP, "(STUBBED) called mode={:#08X}", mode);
 }
 
 /**
@@ -529,7 +529,7 @@ static void ExecuteCommand(const Command& command, u32 thread_id) {
     }
 
     default:
-        LOG_ERROR(Service_GSP, "unknown command 0x%08X", (int)command.id.Value());
+        LOG_ERROR(Service_GSP, "unknown command {:#08X}", (int)command.id.Value());
     }
 
     if (Pica::g_debug_context)

@@ -97,9 +97,9 @@ void Process::ParseKernelCaps(const u32* kernel_caps, size_t len) {
 
             int minor = kernel_version & 0xFF;
             int major = (kernel_version >> 8) & 0xFF;
-            LOG_INFO(Loader, "ExHeader kernel version: %d.%d", major, minor);
+            LOG_INFO(Loader, "ExHeader kernel version: {}.{}", major, minor);
         } else {
-            LOG_ERROR(Loader, "Unhandled kernel caps descriptor: 0x%08X", descriptor);
+            LOG_ERROR(Loader, "Unhandled kernel caps descriptor: {:#08X}", descriptor);
         }
     }
 }

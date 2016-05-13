@@ -45,7 +45,7 @@ FileType IdentifyFile(FileUtil::IOFile& file) {
 FileType IdentifyFile(const std::string& file_name) {
     FileUtil::IOFile file(file_name, "rb");
     if (!file.IsOpen()) {
-        LOG_ERROR(Loader, "Failed to load file %s", file_name.c_str());
+        LOG_ERROR(Loader, "Failed to load file {}", file_name);
         return FileType::Unknown;
     }
 
@@ -115,7 +115,7 @@ std::unique_ptr<AppLoader> GetLoader(FileUtil::IOFile&& file, FileType type,
 ResultStatus LoadFile(const std::string& filename) {
     FileUtil::IOFile file(filename, "rb");
     if (!file.IsOpen()) {
-        LOG_ERROR(Loader, "Failed to load file %s", filename.c_str());
+        LOG_ERROR(Loader, "Failed to load file {}", filename);
         return ResultStatus::Error;
     }
 
@@ -126,12 +126,12 @@ ResultStatus LoadFile(const std::string& filename) {
     FileType filename_type = GuessFromExtension(filename_extension);
 
     if (type != filename_type) {
-        LOG_WARNING(Loader, "File %s has a different type than its extension.", filename.c_str());
+        LOG_WARNING(Loader, "File {} has a different type than its extension.", filename);
         if (FileType::Unknown == type)
             type = filename_type;
     }
 
-    LOG_INFO(Loader, "Loading file %s as %s...", filename.c_str(), GetFileTypeString(type));
+    LOG_INFO(Loader, "Loading file {} as {}...", filename, GetFileTypeString(type));
 
     std::unique_ptr<AppLoader> app_loader = GetLoader(std::move(file), type, filename_filename, filename);
 
@@ -166,7 +166,7 @@ ResultStatus LoadFile(const std::string& filename) {
     // IdentifyFile could know identify file type...
     case FileType::Unknown:
     {
-        LOG_CRITICAL(Loader, "File %s is of unknown type.", filename.c_str());
+        LOG_CRITICAL(Loader, "File {} is of unknown type.", filename);
         return ResultStatus::ErrorInvalidFormat;
     }
     }

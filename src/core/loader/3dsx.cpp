@@ -177,14 +177,14 @@ static THREEDSX_Error Load3DSXFile(FileUtil::IOFile& file, u32 base_addr, Shared
 
                 for (unsigned current_inprogress = 0; current_inprogress < remaining && pos < end_pos; current_inprogress++) {
                     const auto& table = reloc_table[current_inprogress];
-                    LOG_TRACE(Loader, "(t=%d,skip=%u,patch=%u)", current_segment_reloc_table,
+                    LOG_TRACE(Loader, "(t={},skip={},patch={})", current_segment_reloc_table,
                               static_cast<u32>(table.skip), static_cast<u32>(table.patch));
                     pos += table.skip;
                     s32 num_patches = table.patch;
                     while (0 < num_patches && pos < end_pos) {
                         u32 in_addr = static_cast<u32>(reinterpret_cast<u8*>(pos) - program_image.data());
                         u32 addr = TranslateAddr(*pos, &loadinfo, offsets);
-                        LOG_TRACE(Loader, "Patching %08X <-- rel(%08X,%d) (%08X)",
+                        LOG_TRACE(Loader, "Patching {:08X} <-- rel({:08X},{}) ({:08X})",
                                   base_addr + in_addr, addr, current_segment_reloc_table, *pos);
                         switch (current_segment_reloc_table) {
                         case 0:
@@ -222,9 +222,9 @@ static THREEDSX_Error Load3DSXFile(FileUtil::IOFile& file, u32 base_addr, Shared
     code_set->entrypoint = code_set->code.addr;
     code_set->memory = std::make_shared<std::vector<u8>>(std::move(program_image));
 
-    LOG_DEBUG(Loader, "code size:   0x%X", loadinfo.seg_sizes[0]);
-    LOG_DEBUG(Loader, "rodata size: 0x%X", loadinfo.seg_sizes[1]);
-    LOG_DEBUG(Loader, "data size:   0x%X (including 0x%X of bss)", loadinfo.seg_sizes[2], hdr.bss_size);
+    LOG_DEBUG(Loader, "code size:   {:#X}", loadinfo.seg_sizes[0]);
+    LOG_DEBUG(Loader, "rodata size: {:#X}", loadinfo.seg_sizes[1]);
+    LOG_DEBUG(Loader, "data size:   {:#X} (including {:#X} of bss)", loadinfo.seg_sizes[2], hdr.bss_size);
 
     *out_codeset = code_set;
     return ERROR_NONE;
@@ -286,8 +286,8 @@ ResultStatus AppLoader_THREEDSX::ReadRomFS(std::shared_ptr<FileUtil::IOFile>& ro
         u32 romfs_offset = hdr.fs_offset;
         u32 romfs_size = static_cast<u32>(file.GetSize()) - hdr.fs_offset;
 
-        LOG_DEBUG(Loader, "RomFS offset:           0x%08X", romfs_offset);
-        LOG_DEBUG(Loader, "RomFS size:             0x%08X", romfs_size);
+        LOG_DEBUG(Loader, "RomFS offset:           {:#08X}", romfs_offset);
+        LOG_DEBUG(Loader, "RomFS size:             {:#08X}", romfs_size);
 
         // We reopen the file, to allow its position to be independent from file's
         romfs_file = std::make_shared<FileUtil::IOFile>(filepath, "rb");

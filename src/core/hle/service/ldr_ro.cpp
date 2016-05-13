@@ -33,14 +33,14 @@ static void Initialize(Service::Interface* self) {
     u32 process        = cmd_buff[5];
 
     if (value != 0) {
-        LOG_ERROR(Service_LDR, "This value should be zero, but is actually %u!", value);
+        LOG_ERROR(Service_LDR, "This value should be zero, but is actually {}!", value);
     }
 
     // TODO(purpasmart96): Verify return header on HW
 
     cmd_buff[1] = RESULT_SUCCESS.raw; // No error
 
-    LOG_WARNING(Service_LDR, "(STUBBED) called. crs_buffer_ptr=0x%08X, crs_size=0x%08X, address=0x%08X, value=0x%08X, process=0x%08X",
+    LOG_WARNING(Service_LDR, "(STUBBED) called. crs_buffer_ptr={:#08X}, crs_size={:#08X}, address={:#08X}, value={:#08X}, process={:#08X}",
                 crs_buffer_ptr, crs_size, address, value, process);
 }
 
@@ -63,14 +63,14 @@ static void LoadCRR(Service::Interface* self) {
     u32 process        = cmd_buff[4];
 
     if (value != 0) {
-        LOG_ERROR(Service_LDR, "This value should be zero, but is actually %u!", value);
+        LOG_ERROR(Service_LDR, "This value should be zero, but is actually {}!", value);
     }
 
     // TODO(purpasmart96): Verify return header on HW
 
     cmd_buff[1] = RESULT_SUCCESS.raw; // No error
 
-    LOG_WARNING(Service_LDR, "(STUBBED) called. crs_buffer_ptr=0x%08X, crs_size=0x%08X, value=0x%08X, process=0x%08X",
+    LOG_WARNING(Service_LDR, "(STUBBED) called. crs_buffer_ptr={:#08X}, crs_size={:#08X}, value={:#08X}, process={:#08X}",
                 crs_buffer_ptr, crs_size, value, process);
 }
 

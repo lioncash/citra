@@ -18,7 +18,7 @@
 namespace FileSys {
 
 ArchiveFactory_SDMC::ArchiveFactory_SDMC(const std::string& sdmc_directory) : sdmc_directory(sdmc_directory) {
-    LOG_INFO(Service_FS, "Directory %s set as SDMC.", sdmc_directory.c_str());
+    LOG_INFO(Service_FS, "Directory {} set as SDMC.", sdmc_directory);
 }
 
 bool ArchiveFactory_SDMC::Initialize() {
@@ -47,7 +47,7 @@ ResultCode ArchiveFactory_SDMC::Format(const Path& path, const FileSys::ArchiveF
 
 ResultVal<ArchiveFormatInfo> ArchiveFactory_SDMC::GetFormatInfo(const Path& path) const {
     // TODO(Subv): Implement
-    LOG_ERROR(Service_FS, "Unimplemented GetFormatInfo archive %s", GetName().c_str());
+    LOG_ERROR(Service_FS, "Unimplemented GetFormatInfo archive {}", GetName());
     return ResultCode(-1);
 }
 } // namespace FileSys

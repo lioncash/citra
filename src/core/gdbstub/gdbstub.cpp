@@ -160,7 +160,7 @@ static u8 HexCharToValue(u8 hex) {
         return hex - 'A' + 0xA;
     }
 
-    LOG_ERROR(Debug_GDBStub, "Invalid nibble: %c (%02x)\n", hex, hex);
+    LOG_ERROR(Debug_GDBStub, "Invalid nibble: {:c} ({:02x})\n", hex, hex);
     return 0;
 }
 
@@ -256,7 +256,7 @@ static u8 ReadByte() {
     u8 c;
     size_t received_size = recv(gdbserver_socket, reinterpret_cast<char*>(&c), 1, MSG_WAITALL);
     if (received_size != 1) {
-        LOG_ERROR(Debug_GDBStub, "recv failed : %ld", received_size);
+        LOG_ERROR(Debug_GDBStub, "recv failed : {}", received_size);
         Shutdown();
     }
 
@@ -297,7 +297,8 @@ static void RemoveBreakpoint(BreakpointType type, PAddr addr) {
 
     auto bp = p.find(addr);
     if (bp != p.end()) {
-        LOG_DEBUG(Debug_GDBStub, "gdb: removed a breakpoint: %08x bytes at %08x of type %d\n", bp->second.len, bp->second.addr, type);
+        LOG_DEBUG(Debug_GDBStub, "gdb: removed a breakpoint: {:08x} bytes at {:08x} of type {}\n",
+                  bp->second.len, bp->second.addr, static_cast<int>(type));
         p.erase(addr);
     }
 }
@@ -342,7 +343,8 @@ bool CheckBreakpoint(PAddr addr, BreakpointType type) {
         }
 
         if (bp->second.active && (addr >= bp->second.addr && addr < bp->second.addr + len)) {
-            LOG_DEBUG(Debug_GDBStub, "Found breakpoint type %d @ %08x, range: %08x - %08x (%d bytes)\n", type, addr, bp->second.addr, bp->second.addr + len, len);
+            LOG_DEBUG(Debug_GDBStub, "Found breakpoint type {} @ {:08x}, range: {:08x} - {:08x} ({} bytes)\n",
+                      static_cast<int>(type), addr, bp->second.addr, bp->second.addr + len, len);
             return true;
         }
     }
@@ -404,9 +406,8 @@ static void SendReply(const char* reply) {
 
 /// Handle query command from gdb client.
 static void HandleQuery() {
-    LOG_DEBUG(Debug_GDBStub, "gdb: query '%s'\n", command_buffer + 1);
-
     const char* query = reinterpret_cast<const char*>(command_buffer + 1);
+    LOG_DEBUG(Debug_GDBStub, "gdb: query '{}'\n", query);
 
     if (strcmp(query, "TStatus") == 0 ) {
         SendReply("T0");
@@ -445,7 +446,7 @@ static void SendSignal(u32 signal) {
     latest_signal = signal;
 
     std::string buffer = Common::StringFromFormat("T%02x%02x:%08x;%02x:%08x;", latest_signal, 15, htonl(Core::g_app_core->GetPC()), 13, htonl(Core::g_app_core->GetReg(13)));
-    LOG_DEBUG(Debug_GDBStub, "Response: %s", buffer.c_str());
+    LOG_DEBUG(Debug_GDBStub, "Response: {}", buffer);
     SendReply(buffer.c_str());
 }
 
@@ -464,7 +465,7 @@ static void ReadCommand() {
         SendSignal(SIGTRAP);
         return;
     } else if (c != GDB_STUB_START) {
-        LOG_DEBUG(Debug_GDBStub, "gdb: read invalid byte %02x\n", c);
+        LOG_DEBUG(Debug_GDBStub, "gdb: read invalid byte {:02x}\n", c);
         return;
     }
 
@@ -483,8 +484,8 @@ static void ReadCommand() {
     u8 checksum_calculated = CalculateChecksum(command_buffer, command_length);
 
     if (checksum_received != checksum_calculated) {
-        LOG_ERROR(Debug_GDBStub, "gdb: invalid checksum: calculated %02x and read %02x for $%s# (length: %d)\n",
-            checksum_calculated, checksum_received, command_buffer, command_length);
+        LOG_ERROR(Debug_GDBStub, "gdb: invalid checksum: calculated {:02x} and read {:02x} for ${:s}# (length: {})\n",
+                  checksum_calculated, checksum_received, command_buffer, command_length);
 
         command_length = 0;
 
@@ -638,7 +639,7 @@ static void ReadMemory() {
     start_offset = addr_pos+1;
     u32 len = HexToInt(start_offset, static_cast<u32>((command_buffer + command_length) - start_offset));
 
-    LOG_DEBUG(Debug_GDBStub, "gdb: addr: %08x len: %08x\n", addr, len);
+    LOG_DEBUG(Debug_GDBStub, "gdb: addr: {:08x} len: {:08x}\n", addr, len);
 
     if (len * 2 > sizeof(reply)) {
         SendReply("E01");
@@ -722,7 +723,8 @@ static bool CommitBreakpoint(BreakpointType type, PAddr addr, u32 len) {
     breakpoint.len = len;
     p.insert({ addr, breakpoint });
 
-    LOG_DEBUG(Debug_GDBStub, "gdb: added %d breakpoint: %08x bytes at %08x\n", type, breakpoint.len, breakpoint.addr);
+    LOG_DEBUG(Debug_GDBStub, "gdb: added {} breakpoint: {:08x} bytes at {:08x}\n",
+              static_cast<int>(type), breakpoint.len, breakpoint.addr);
 
     return true;
 }
@@ -831,7 +833,7 @@ void HandlePacket() {
         return;
     }
 
-    LOG_DEBUG(Debug_GDBStub, "Packet: %s", command_buffer);
+    LOG_DEBUG(Debug_GDBStub, "Packet: {:s}", command_buffer);
 
     switch (command_buffer[0]) {
     case 'q':
@@ -925,7 +927,7 @@ static void Init(u16 port) {
     breakpoints_write.clear();
 
     // Start gdb server
-    LOG_INFO(Debug_GDBStub, "Starting GDB server on port %d...", port);
+    LOG_INFO(Debug_GDBStub, "Starting GDB server on port {}...", port);
 
     sockaddr_in saddr_server = {};
     saddr_server.sin_family = AF_INET;

@@ -596,7 +596,7 @@ struct Regs {
         case ColorFormat::RGBA4:
             return 2;
         default:
-            LOG_CRITICAL(HW_GPU, "Unknown color format %u", format);
+            LOG_CRITICAL(HW_GPU, "Unknown color format {}", static_cast<u32>(format));
             UNIMPLEMENTED();
         }
     }
@@ -659,7 +659,7 @@ struct Regs {
         case DepthFormat::D24S8:
             return 4;
         default:
-            LOG_CRITICAL(HW_GPU, "Unknown depth format %u", format);
+            LOG_CRITICAL(HW_GPU, "Unknown depth format {}", static_cast<u32>(format));
             UNIMPLEMENTED();
         }
     }
@@ -673,7 +673,7 @@ struct Regs {
         case DepthFormat::D24S8:
             return 24;
         default:
-            LOG_CRITICAL(HW_GPU, "Unknown depth format %u", format);
+            LOG_CRITICAL(HW_GPU, "Unknown depth format {}", static_cast<u32>(format));
             UNIMPLEMENTED();
         }
     }

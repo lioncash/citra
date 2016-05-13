@@ -32,19 +32,19 @@ std::vector<u8> PipeRead(DspPipe pipe_number, u32 length) {
     const size_t pipe_index = static_cast<size_t>(pipe_number);
 
     if (pipe_index >= NUM_DSP_PIPE) {
-        LOG_ERROR(Audio_DSP, "pipe_number = %zu invalid", pipe_index);
+        LOG_ERROR(Audio_DSP, "pipe_number = {} invalid", pipe_index);
         return {};
     }
 
     if (length > UINT16_MAX) { // Can only read at most UINT16_MAX from the pipe
-        LOG_ERROR(Audio_DSP, "length of %u greater than max of %u", length, UINT16_MAX);
+        LOG_ERROR(Audio_DSP, "length of {} greater than max of {}", length, UINT16_MAX);
         return {};
     }
 
     std::vector<u8>& data = pipe_data[pipe_index];
 
     if (length > data.size()) {
-        LOG_WARNING(Audio_DSP, "pipe_number = %zu is out of data, application requested read of %u but %zu remain",
+        LOG_WARNING(Audio_DSP, "pipe_number = {} is out of data, application requested read of {} but {} remain",
                     pipe_index, length, data.size());
         length = static_cast<u32>(data.size());
     }
@@ -61,7 +61,7 @@ size_t GetPipeReadableSize(DspPipe pipe_number) {
     const size_t pipe_index = static_cast<size_t>(pipe_number);
 
     if (pipe_index >= NUM_DSP_PIPE) {
-        LOG_ERROR(Audio_DSP, "pipe_number = %zu invalid", pipe_index);
+        LOG_ERROR(Audio_DSP, "pipe_number = {} invalid", pipe_index);
         return 0;
     }
 
@@ -112,7 +112,7 @@ void PipeWrite(DspPipe pipe_number, const std::vector<u8>& buffer) {
     switch (pipe_number) {
     case DspPipe::Audio: {
         if (buffer.size() != 4) {
-            LOG_ERROR(Audio_DSP, "DspPipe::Audio: Unexpected buffer length %zu was written", buffer.size());
+            LOG_ERROR(Audio_DSP, "DspPipe::Audio: Unexpected buffer length {} was written", buffer.size());
             return;
         }
 
@@ -152,7 +152,7 @@ void PipeWrite(DspPipe pipe_number, const std::vector<u8>& buffer) {
             dsp_state = DspState::Sleeping;
             break;
         default:
-            LOG_ERROR(Audio_DSP, "Application has requested unknown state transition of DSP hardware %hhu", buffer[0]);
+            LOG_ERROR(Audio_DSP, "Application has requested unknown state transition of DSP hardware {}", buffer[0]);
             dsp_state = DspState::Off;
             break;
         }
@@ -160,7 +160,7 @@ void PipeWrite(DspPipe pipe_number, const std::vector<u8>& buffer) {
         return;
     }
     default:
-        LOG_CRITICAL(Audio_DSP, "pipe_number = %zu unimplemented", static_cast<size_t>(pipe_number));
+        LOG_CRITICAL(Audio_DSP, "pipe_number = {} unimplemented", static_cast<size_t>(pipe_number));
         UNIMPLEMENTED();
         return;
     }

@@ -138,7 +138,7 @@ void Recorder::Finish(const std::string& filename) {
                 throw "Failed to write stream element";
         }
     } catch(const char* str) {
-        LOG_ERROR(HW_GPU, "Writing CiTrace file failed: %s", str);
+        LOG_ERROR(HW_GPU, "Writing CiTrace file failed: {}", str);
     }
 }
 

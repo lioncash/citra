@@ -41,10 +41,7 @@
 #include "common/scm_rev.h"
 #include "common/scope_exit.h"
 #include "common/string_util.h"
-#include "common/logging/backend.h"
-#include "common/logging/filter.h"
 #include "common/logging/log.h"
-#include "common/logging/text_formatter.h"
 
 #include "core/core.h"
 #include "core/settings.h"
@@ -553,8 +550,7 @@ void GMainWindow::closeEvent(QCloseEvent* event) {
 #endif
 
 int main(int argc, char* argv[]) {
-    Log::Filter log_filter(Log::Level::Info);
-    Log::SetFilter(&log_filter);
+    Log::Initialize();
 
     MicroProfileOnThreadCreate("Frontend");
     SCOPE_EXIT({
@@ -573,7 +569,7 @@ int main(int argc, char* argv[]) {
 
     GMainWindow main_window;
     // After settings have been loaded by GMainWindow, apply the filter
-    log_filter.ParseFilterString(Settings::values.log_filter);
+    Log::ParseFilter(Settings::values.log_filter);
 
     main_window.show();
     return app.exec();

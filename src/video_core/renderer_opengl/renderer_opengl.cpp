@@ -177,10 +177,12 @@ void RendererOpenGL::LoadFBToScreenInfo(const GPU::Regs::FramebufferConfig& fram
     const PAddr framebuffer_addr = framebuffer.active_fb == 0 ?
             framebuffer.address_left1 : framebuffer.address_left2;
 
-    LOG_TRACE(Render_OpenGL, "0x%08x bytes from 0x%08x(%dx%d), fmt %x",
-        framebuffer.stride * framebuffer.height,
-        framebuffer_addr, (int)framebuffer.width,
-        (int)framebuffer.height, (int)framebuffer.format);
+    LOG_TRACE(Render_OpenGL, "{:#08x} bytes from {:#08x}({}x{}), fmt {:x}",
+              framebuffer.stride * framebuffer.height,
+              framebuffer_addr,
+              framebuffer.width.Value(),
+              framebuffer.height.Value(),
+              static_cast<int>(framebuffer.format));
 
     int bpp = GPU::Regs::BytesPerPixel(framebuffer.color_format);
     size_t pixel_stride = framebuffer.stride / bpp;
@@ -465,8 +467,9 @@ static void DebugHandler(GLenum source, GLenum type, GLuint id, GLenum severity,
         level = Log::Level::Debug;
         break;
     }
-    LOG_GENERIC(Log::Class::Render_OpenGL, level, "%s %s %d: %s",
-                GetSource(source), GetType(type), id, message);
+    // TODO: Handle log level switch.
+    LOG_INFO(Render_OpenGL, "{} {} {}: {}",
+             GetSource(source), GetType(type), id, message);
 }
 
 /// Initialize the renderer
@@ -478,9 +481,9 @@ bool RendererOpenGL::Init() {
         glDebugMessageCallback(DebugHandler, nullptr);
     }
 
-    LOG_INFO(Render_OpenGL, "GL_VERSION: %s", glGetString(GL_VERSION));
-    LOG_INFO(Render_OpenGL, "GL_VENDOR: %s", glGetString(GL_VENDOR));
-    LOG_INFO(Render_OpenGL, "GL_RENDERER: %s", glGetString(GL_RENDERER));
+    LOG_INFO(Render_OpenGL, "GL_VERSION: {}", glGetString(GL_VERSION));
+    LOG_INFO(Render_OpenGL, "GL_VENDOR: {}", glGetString(GL_VENDOR));
+    LOG_INFO(Render_OpenGL, "GL_RENDERER: {}", glGetString(GL_RENDERER));
     if (!GLAD_GL_VERSION_3_3) {
         return false;
     }

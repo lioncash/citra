@@ -180,15 +180,15 @@ ResultStatus AppLoader_NCCH::LoadSectionExeFS(const char* name, std::vector<u8>&
     if (result != ResultStatus::Success)
         return result;
 
-    LOG_DEBUG(Loader, "%d sections:", kMaxSections);
+    LOG_DEBUG(Loader, "{} sections:", kMaxSections);
     // Iterate through the ExeFs archive until we find a section with the specified name...
     for (unsigned section_number = 0; section_number < kMaxSections; section_number++) {
         const auto& section = exefs_header.section[section_number];
 
         // Load the specified section...
         if (strcmp(section.name, name) == 0) {
-            LOG_DEBUG(Loader, "%d - offset: 0x%08X, size: 0x%08X, name: %s", section_number,
-                      section.offset, section.size, section.name);
+            LOG_DEBUG(Loader, "{} - offset: {:#08X}, size: {:#08X}, name: {}", section_number,
+                       section.offset, section.size, section.name);
 
             s64 section_offset = (section.offset + exefs_offset + sizeof(ExeFs_Header) + ncch_offset);
             file.Seek(section_offset, SEEK_SET);
@@ -261,16 +261,16 @@ ResultStatus AppLoader_NCCH::LoadExeFS() {
     priority                = exheader_header.arm11_system_local_caps.priority;
     resource_limit_category = exheader_header.arm11_system_local_caps.resource_limit_category;
 
-    LOG_INFO(Loader,  "Name:                        %s"    , exheader_header.codeset_info.name);
-    LOG_INFO(Loader,  "Program ID:                  %016llX" , ncch_header.program_id);
-    LOG_DEBUG(Loader, "Code compressed:             %s"    , is_compressed ? "yes" : "no");
-    LOG_DEBUG(Loader, "Entry point:                 0x%08X", entry_point);
-    LOG_DEBUG(Loader, "Code size:                   0x%08X", code_size);
-    LOG_DEBUG(Loader, "Stack size:                  0x%08X", stack_size);
-    LOG_DEBUG(Loader, "Bss size:                    0x%08X", bss_size);
-    LOG_DEBUG(Loader, "Core version:                %d"    , core_version);
-    LOG_DEBUG(Loader, "Thread priority:             0x%X"  , priority);
-    LOG_DEBUG(Loader, "Resource limit category:     %d"    , resource_limit_category);
+    LOG_INFO(Loader,  "Name:                        {}"     , exheader_header.codeset_info.name);
+    LOG_INFO(Loader,  "Program ID:                  {:016d}", ncch_header.program_id);
+    LOG_DEBUG(Loader, "Code compressed:             {}"     , is_compressed ? "yes" : "no");
+    LOG_DEBUG(Loader, "Entry point:                 {:#08X}", entry_point);
+    LOG_DEBUG(Loader, "Code size:                   {:#08X}", code_size);
+    LOG_DEBUG(Loader, "Stack size:                  {:#08X}", stack_size);
+    LOG_DEBUG(Loader, "Bss size:                    {:#08X}", bss_size);
+    LOG_DEBUG(Loader, "Core version:                {}"     , core_version);
+    LOG_DEBUG(Loader, "Thread priority:             {:X}"   , priority);
+    LOG_DEBUG(Loader, "Resource limit category:     {}"     , resource_limit_category);
 
     if (exheader_header.arm11_system_local_caps.program_id != ncch_header.program_id) {
         LOG_ERROR(Loader, "ExHeader Program ID mismatch: the ROM is probably encrypted.");
@@ -282,8 +282,8 @@ ResultStatus AppLoader_NCCH::LoadExeFS() {
     exefs_offset = ncch_header.exefs_offset * kBlockSize;
     u32 exefs_size = ncch_header.exefs_size * kBlockSize;
 
-    LOG_DEBUG(Loader, "ExeFS offset:                0x%08X", exefs_offset);
-    LOG_DEBUG(Loader, "ExeFS size:                  0x%08X", exefs_size);
+    LOG_DEBUG(Loader, "ExeFS offset:                {:#08X}", exefs_offset);
+    LOG_DEBUG(Loader, "ExeFS size:                  {:#08X}", exefs_size);
 
     file.Seek(exefs_offset + ncch_offset, SEEK_SET);
     if (file.ReadBytes(&exefs_header, sizeof(ExeFs_Header)) != sizeof(ExeFs_Header))
@@ -331,8 +331,8 @@ ResultStatus AppLoader_NCCH::ReadRomFS(std::shared_ptr<FileUtil::IOFile>& romfs_
         u32 romfs_offset = ncch_offset + (ncch_header.romfs_offset * kBlockSize) + 0x1000;
         u32 romfs_size = (ncch_header.romfs_size * kBlockSize) - 0x1000;
 
-        LOG_DEBUG(Loader, "RomFS offset:           0x%08X", romfs_offset);
-        LOG_DEBUG(Loader, "RomFS size:             0x%08X", romfs_size);
+        LOG_DEBUG(Loader, "RomFS offset:           {:#08X}", romfs_offset);
+        LOG_DEBUG(Loader, "RomFS size:             {:#08X}", romfs_size);
 
         if (file.GetSize () < romfs_offset + romfs_size)
             return ResultStatus::Error;

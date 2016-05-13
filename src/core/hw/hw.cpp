@@ -36,7 +36,7 @@ inline void Read(T &var, const u32 addr) {
         LCD::Read(var, addr);
         break;
     default:
-        LOG_ERROR(HW_Memory, "unknown Read%lu @ 0x%08X", sizeof(var) * 8, addr);
+        LOG_ERROR(HW_Memory, "unknown Read{} @ {:#08X}", sizeof(var) * 8, addr);
     }
 }
 
@@ -65,7 +65,7 @@ inline void Write(u32 addr, const T data) {
         LCD::Write(addr, data);
         break;
     default:
-        LOG_ERROR(HW_Memory, "unknown Write%lu 0x%08X @ 0x%08X", sizeof(data) * 8, (u32)data, addr);
+        LOG_ERROR(HW_Memory, "unknown Write{} {:#08X} @ {:#08X}", sizeof(data) * 8, (u32)data, addr);
     }
 }
 

@@ -63,7 +63,7 @@ void SelectSink(std::string sink_id) {
     });
 
     if (iter == g_sink_details.end()) {
-        LOG_ERROR(Audio, "AudioCore::SelectSink given invalid sink_id");
+        LOG_ERROR(Audio, "AudioCore::SelectSink given invalid sink_id: {}", sink_id);
         DSP::HLE::SetSink(std::make_unique<NullSink>());
         return;
     }

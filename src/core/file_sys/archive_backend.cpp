@@ -15,6 +15,8 @@
 
 namespace FileSys {
 
+
+
 Path::Path(LowPathType type, u32 size, u32 pointer) : type(type) {
     switch (type) {
     case Binary:

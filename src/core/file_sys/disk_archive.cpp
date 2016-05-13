@@ -18,7 +18,7 @@
 namespace FileSys {
 
 ResultVal<std::unique_ptr<FileBackend>> DiskArchive::OpenFile(const Path& path, const Mode mode) const {
-    LOG_DEBUG(Service_FS, "called path=%s mode=%01X", path.DebugStr().c_str(), mode.hex);
+    LOG_DEBUG(Service_FS, "called path={} mode={:01X}", path.DebugStr(), mode.hex);
     auto file = std::make_unique<DiskFile>(*this, path, mode);
     ResultCode result = file->Open();
     if (result.IsError())
@@ -82,7 +82,7 @@ bool DiskArchive::RenameDirectory(const Path& src_path, const Path& dest_path) c
 }
 
 std::unique_ptr<DirectoryBackend> DiskArchive::OpenDirectory(const Path& path) const {
-    LOG_DEBUG(Service_FS, "called path=%s", path.DebugStr().c_str());
+    LOG_DEBUG(Service_FS, "called path={}", path.DebugStr());
     auto directory = std::make_unique<DiskDirectory>(*this, path);
     if (!directory->Open())
         return nullptr;
@@ -115,7 +115,7 @@ ResultCode DiskFile::Open() {
 
     if (!FileUtil::Exists(path)) {
         if (!mode.create_flag) {
-            LOG_ERROR(Service_FS, "Non-existing file %s can't be open without mode create.", path.c_str());
+            LOG_ERROR(Service_FS, "Non-existing file {} can't be open without mode create.", path);
             return ResultCode(ErrorDescription::FS_NotFound, ErrorModule::FS, ErrorSummary::NotFound, ErrorLevel::Status);
         } else {
             // Create the file
@@ -198,7 +198,7 @@ u32 DiskDirectory::Read(const u32 count, Entry* entries) {
         const std::string& filename = file.virtualName;
         Entry& entry = entries[entries_read];
 
-        LOG_TRACE(Service_FS, "File %s: size=%llu dir=%d", filename.c_str(), file.size, file.isDirectory);
+        LOG_TRACE(Service_FS, "File {}: size={} dir={}", filename, file.size, file.isDirectory);
 
         // TODO(Link Mauve): use a proper conversion to UTF-16.
         for (size_t j = 0; j < FILENAME_LENGTH; ++j) {

@@ -64,7 +64,7 @@ static void OpenFile(Service::Interface* self) {
     u32 filename_ptr      = cmd_buff[9];
     FileSys::Path file_path(filename_type, filename_size, filename_ptr);
 
-    LOG_DEBUG(Service_FS, "path=%s, mode=%d attrs=%u", file_path.DebugStr().c_str(), mode.hex, attributes);
+    LOG_DEBUG(Service_FS, "path={}, mode={} attrs={}", file_path.DebugStr(), mode.hex, attributes);
 
     ResultVal<SharedPtr<File>> file_res = OpenFileFromArchive(archive_handle, file_path, mode);
     cmd_buff[1] = file_res.Code().raw;
@@ -72,7 +72,7 @@ static void OpenFile(Service::Interface* self) {
         cmd_buff[3] = Kernel::g_handle_table.Create(*file_res).MoveFrom();
     } else {
         cmd_buff[3] = 0;
-        LOG_ERROR(Service_FS, "failed to get a handle for file %s", file_path.DebugStr().c_str());
+        LOG_ERROR(Service_FS, "failed to get a handle for file {}", file_path.DebugStr());
     }
 }
 
@@ -110,13 +110,13 @@ static void OpenFileDirectly(Service::Interface* self) {
     FileSys::Path archive_path(archivename_type, archivename_size, archivename_ptr);
     FileSys::Path file_path(filename_type, filename_size, filename_ptr);
 
-    LOG_DEBUG(Service_FS, "archive_id=0x%08X archive_path=%s file_path=%s, mode=%u attributes=%d",
-              archive_id, archive_path.DebugStr().c_str(), file_path.DebugStr().c_str(), mode.hex, attributes);
+    LOG_DEBUG(Service_FS, "archive_id={:#08X} archive_path={} file_path={}, mode={} attributes={}",
+              static_cast<u32>(archive_id), archive_path.DebugStr(), file_path.DebugStr(), mode.hex, attributes);
 
     ResultVal<ArchiveHandle> archive_handle = OpenArchive(archive_id, archive_path);
     if (archive_handle.Failed()) {
-        LOG_ERROR(Service_FS, "failed to get a handle for archive archive_id=0x%08X archive_path=%s",
-                  archive_id, archive_path.DebugStr().c_str());
+        LOG_ERROR(Service_FS, "failed to get a handle for archive archive_id={:#08X} archive_path={}",
+                  static_cast<u32>(archive_id), archive_path.DebugStr());
         cmd_buff[1] = archive_handle.Code().raw;
         cmd_buff[3] = 0;
         return;
@@ -129,8 +129,8 @@ static void OpenFileDirectly(Service::Interface* self) {
         cmd_buff[3] = Kernel::g_handle_table.Create(*file_res).MoveFrom();
     } else {
         cmd_buff[3] = 0;
-        LOG_ERROR(Service_FS, "failed to get a handle for file %s mode=%u attributes=%d",
-                  file_path.DebugStr().c_str(), mode.hex, attributes);
+        LOG_ERROR(Service_FS, "failed to get a handle for file {} mode={} attributes={}",
+                  file_path.DebugStr(), mode.hex, attributes);
     }
 }
 
@@ -155,8 +155,8 @@ static void DeleteFile(Service::Interface* self) {
 
     FileSys::Path file_path(filename_type, filename_size, filename_ptr);
 
-    LOG_DEBUG(Service_FS, "type=%d size=%d data=%s",
-              filename_type, filename_size, file_path.DebugStr().c_str());
+    LOG_DEBUG(Service_FS, "type={} size={} data={}",
+              static_cast<u32>(filename_type), filename_size, file_path.DebugStr());
 
     cmd_buff[1] = DeleteFileFromArchive(archive_handle, file_path).raw;
 }
@@ -192,9 +192,9 @@ static void RenameFile(Service::Interface* self) {
     FileSys::Path src_file_path(src_filename_type, src_filename_size, src_filename_ptr);
     FileSys::Path dest_file_path(dest_filename_type, dest_filename_size, dest_filename_ptr);
 
-    LOG_DEBUG(Service_FS, "src_type=%d src_size=%d src_data=%s dest_type=%d dest_size=%d dest_data=%s",
-              src_filename_type, src_filename_size, src_file_path.DebugStr().c_str(),
-              dest_filename_type, dest_filename_size, dest_file_path.DebugStr().c_str());
+    LOG_DEBUG(Service_FS, "src_type={} src_size={} src_data={} dest_type={} dest_size={} dest_data={}",
+              static_cast<u32>(src_filename_type), src_filename_size, src_file_path.DebugStr(),
+              static_cast<u32>(dest_filename_type), dest_filename_size, dest_file_path.DebugStr());
 
     cmd_buff[1] = RenameFileBetweenArchives(src_archive_handle, src_file_path, dest_archive_handle, dest_file_path).raw;
 }
@@ -220,8 +220,8 @@ static void DeleteDirectory(Service::Interface* self) {
 
     FileSys::Path dir_path(dirname_type, dirname_size, dirname_ptr);
 
-    LOG_DEBUG(Service_FS, "type=%d size=%d data=%s",
-              dirname_type, dirname_size, dir_path.DebugStr().c_str());
+    LOG_DEBUG(Service_FS, "type={} size={} data={}",
+              static_cast<u32>(dirname_type), dirname_size, dir_path.DebugStr());
 
     cmd_buff[1] = DeleteDirectoryFromArchive(archive_handle, dir_path).raw;
 }
@@ -250,7 +250,8 @@ static void CreateFile(Service::Interface* self) {
 
     FileSys::Path file_path(filename_type, filename_size, filename_ptr);
 
-    LOG_DEBUG(Service_FS, "type=%d size=%llu data=%s", filename_type, file_size, file_path.DebugStr().c_str());
+    LOG_DEBUG(Service_FS, "type={} size={} data={}",
+              static_cast<u32>(filename_type), file_size, file_path.DebugStr());
 
     cmd_buff[1] = CreateFileInArchive(archive_handle, file_path, file_size).raw;
 }
@@ -276,7 +277,8 @@ static void CreateDirectory(Service::Interface* self) {
 
     FileSys::Path dir_path(dirname_type, dirname_size, dirname_ptr);
 
-    LOG_DEBUG(Service_FS, "type=%d size=%d data=%s", dirname_type, dirname_size, dir_path.DebugStr().c_str());
+    LOG_DEBUG(Service_FS, "type={} size={} data={}",
+              static_cast<u32>(dirname_type), dirname_size, dir_path.DebugStr());
 
     cmd_buff[1] = CreateDirectoryFromArchive(archive_handle, dir_path).raw;
 }
@@ -312,9 +314,9 @@ static void RenameDirectory(Service::Interface* self) {
     FileSys::Path src_dir_path(src_dirname_type, src_dirname_size, src_dirname_ptr);
     FileSys::Path dest_dir_path(dest_dirname_type, dest_dirname_size, dest_dirname_ptr);
 
-    LOG_DEBUG(Service_FS, "src_type=%d src_size=%d src_data=%s dest_type=%d dest_size=%d dest_data=%s",
-              src_dirname_type, src_dirname_size, src_dir_path.DebugStr().c_str(),
-              dest_dirname_type, dest_dirname_size, dest_dir_path.DebugStr().c_str());
+    LOG_DEBUG(Service_FS, "src_type={} src_size={} src_data={} dest_type={} dest_size={} dest_data={}",
+              static_cast<u32>(src_dirname_type), src_dirname_size, src_dir_path.DebugStr(),
+              static_cast<u32>(dest_dirname_type), dest_dirname_size, dest_dir_path.DebugStr());
 
     cmd_buff[1] = RenameDirectoryBetweenArchives(src_archive_handle, src_dir_path, dest_archive_handle, dest_dir_path).raw;
 }
@@ -342,15 +344,16 @@ static void OpenDirectory(Service::Interface* self) {
 
     FileSys::Path dir_path(dirname_type, dirname_size, dirname_ptr);
 
-    LOG_DEBUG(Service_FS, "type=%d size=%d data=%s", dirname_type, dirname_size, dir_path.DebugStr().c_str());
+    LOG_DEBUG(Service_FS, "type={} size={} data={}",
+              static_cast<u32>(dirname_type), dirname_size, dir_path.DebugStr());
 
     ResultVal<SharedPtr<Directory>> dir_res = OpenDirectoryFromArchive(archive_handle, dir_path);
     cmd_buff[1] = dir_res.Code().raw;
     if (dir_res.Succeeded()) {
         cmd_buff[3] = Kernel::g_handle_table.Create(*dir_res).MoveFrom();
     } else {
-        LOG_ERROR(Service_FS, "failed to get a handle for directory type=%d size=%d data=%s",
-                  dirname_type, dirname_size, dir_path.DebugStr().c_str());
+        LOG_ERROR(Service_FS, "failed to get a handle for directory type={} size={} data={}",
+                  static_cast<u32>(dirname_type), dirname_size, dir_path.DebugStr());
     }
 }
 
@@ -376,7 +379,8 @@ static void OpenArchive(Service::Interface* self) {
     u32 archivename_ptr   = cmd_buff[5];
     FileSys::Path archive_path(archivename_type, archivename_size, archivename_ptr);
 
-    LOG_DEBUG(Service_FS, "archive_id=0x%08X archive_path=%s", archive_id, archive_path.DebugStr().c_str());
+    LOG_DEBUG(Service_FS, "archive_id={:#08X} archive_path={}",
+              static_cast<u32>(archive_id), archive_path.DebugStr());
 
     ResultVal<ArchiveHandle> handle = OpenArchive(archive_id, archive_path);
     cmd_buff[1] = handle.Code().raw;
@@ -385,8 +389,8 @@ static void OpenArchive(Service::Interface* self) {
         cmd_buff[3] = (*handle >> 32) & 0xFFFFFFFF;
     } else {
         cmd_buff[2] = cmd_buff[3] = 0;
-        LOG_ERROR(Service_FS, "failed to get a handle for archive archive_id=0x%08X archive_path=%s",
-                  archive_id, archive_path.DebugStr().c_str());
+        LOG_ERROR(Service_FS, "failed to get a handle for archive archive_id={:#08X} archive_path={}",
+                  static_cast<u32>(archive_id), archive_path.DebugStr());
     }
 }
 
@@ -466,10 +470,11 @@ static void FormatSaveData(Service::Interface* self) {
     u32 archivename_ptr = cmd_buff[11];
     FileSys::Path archive_path(archivename_type, archivename_size, archivename_ptr);
 
-    LOG_DEBUG(Service_FS, "archive_path=%s", archive_path.DebugStr().c_str());
+    LOG_DEBUG(Service_FS, "archive_path={}", archive_path.DebugStr());
 
     if (archive_id != FS::ArchiveIdCode::SaveData) {
-        LOG_ERROR(Service_FS, "tried to format an archive different than SaveData, %u", archive_id);
+        LOG_ERROR(Service_FS, "tried to format an archive different than SaveData, {}",
+                  static_cast<u32>(archive_id));
         cmd_buff[1] = ResultCode(ErrorDescription::FS_InvalidPath, ErrorModule::FS,
                                  ErrorSummary::InvalidArgument, ErrorLevel::Usage).raw;
         return;
@@ -571,11 +576,11 @@ static void CreateExtSaveData(Service::Interface* self) {
     u32 icon_size = cmd_buff[9];
     VAddr icon_buffer = cmd_buff[11];
 
-    LOG_WARNING(Service_FS, "(STUBBED) savedata_high=%08X savedata_low=%08X cmd_buff[3]=%08X "
-            "cmd_buff[4]=%08X cmd_buff[5]=%08X cmd_buff[6]=%08X cmd_buff[7]=%08X cmd_buff[8]=%08X "
-            "icon_size=%08X icon_descriptor=%08X icon_buffer=%08X", save_high, save_low,
-            cmd_buff[3], cmd_buff[4], cmd_buff[5], cmd_buff[6], cmd_buff[7], cmd_buff[8], icon_size,
-            cmd_buff[10], icon_buffer);
+    LOG_WARNING(Service_FS, "(STUBBED) savedata_high={:08X} savedata_low={:08X} cmd_buff[3]={:08X} "
+                "cmd_buff[4]={:08X} cmd_buff[5]={:08X} cmd_buff[6]={:08X} cmd_buff[7]={:08X} cmd_buff[8]={:08X} "
+                "icon_size={:08X} icon_descriptor={:08X} icon_buffer={:08X}", save_high, save_low,
+                cmd_buff[3], cmd_buff[4], cmd_buff[5], cmd_buff[6], cmd_buff[7], cmd_buff[8], icon_size,
+                cmd_buff[10], icon_buffer);
 
     FileSys::ArchiveFormatInfo format_info;
     format_info.number_directories = cmd_buff[5];
@@ -603,8 +608,8 @@ static void DeleteExtSaveData(Service::Interface* self) {
     u32 save_high = cmd_buff[3];
     u32 unknown = cmd_buff[4]; // TODO(Subv): Figure out what this is
 
-    LOG_WARNING(Service_FS, "(STUBBED) save_low=%08X save_high=%08X media_type=%08X unknown=%08X",
-            save_low, save_high, cmd_buff[1] & 0xFF, unknown);
+    LOG_WARNING(Service_FS, "(STUBBED) save_low={:08X} save_high={:08X} media_type={:08X} unknown={:08X}",
+                save_low, save_high, cmd_buff[1] & 0xFF, unknown);
 
     cmd_buff[1] = DeleteExtSaveData(media_type, save_high, save_low).raw;
 }
@@ -663,10 +668,10 @@ static void CreateSystemSaveData(Service::Interface* self) {
     u32 savedata_high = cmd_buff[1];
     u32 savedata_low = cmd_buff[2];
 
-    LOG_WARNING(Service_FS, "(STUBBED) savedata_high=%08X savedata_low=%08X cmd_buff[3]=%08X "
-            "cmd_buff[4]=%08X cmd_buff[5]=%08X cmd_buff[6]=%08X cmd_buff[7]=%08X cmd_buff[8]=%08X "
-            "cmd_buff[9]=%08X", savedata_high, savedata_low, cmd_buff[3], cmd_buff[4], cmd_buff[5],
-            cmd_buff[6], cmd_buff[7], cmd_buff[8], cmd_buff[9]);
+    LOG_WARNING(Service_FS, "(STUBBED) savedata_high={:08X} savedata_low={:08X} cmd_buff[3]={:08X} "
+                "cmd_buff[4]={:08X} cmd_buff[5]={:08X} cmd_buff[6]={:08X} cmd_buff[7]={:08X} cmd_buff[8]={:08X}"
+                "cmd_buff[9]={:08X}", savedata_high, savedata_low, cmd_buff[3], cmd_buff[4], cmd_buff[5],
+                cmd_buff[6], cmd_buff[7], cmd_buff[8], cmd_buff[9]);
 
     cmd_buff[1] = CreateSystemSaveData(savedata_high, savedata_low).raw;
 }
@@ -690,7 +695,7 @@ static void InitializeWithSdkVersion(Service::Interface* self) {
 
     cmd_buff[1] = RESULT_SUCCESS.raw;
 
-    LOG_WARNING(Service_FS, "(STUBBED) called unk1=0x%08X, unk2=0x%08X, unk3=0x%08X",
+    LOG_WARNING(Service_FS, "(STUBBED) called unk1={:#08X}, unk2={:#08X}, unk3={:#08X}",
                 unk1, unk2, unk3);
 }
 
@@ -709,7 +714,7 @@ static void SetPriority(Service::Interface* self) {
 
     cmd_buff[1] = RESULT_SUCCESS.raw;
 
-    LOG_DEBUG(Service_FS, "called priority=0x%X", priority);
+    LOG_DEBUG(Service_FS, "called priority={:#X}", priority);
 }
 
 /**
@@ -724,13 +729,13 @@ static void GetPriority(Service::Interface* self) {
     u32* cmd_buff = Kernel::GetCommandBuffer();
 
     if (priority == -1) {
-        LOG_INFO(Service_FS, "priority was not set, priority=0x%X", priority);
+        LOG_INFO(Service_FS, "priority was not set, priority={:#X}", priority);
     }
 
     cmd_buff[1] = RESULT_SUCCESS.raw;
     cmd_buff[2] = priority;
 
-    LOG_DEBUG(Service_FS, "called priority=0x%X", priority);
+    LOG_DEBUG(Service_FS, "called priority={:#X}", priority);
 }
 
 /**
@@ -748,7 +753,7 @@ static void GetPriority(Service::Interface* self) {
 static void GetArchiveResource(Service::Interface* self) {
     u32* cmd_buff = Kernel::GetCommandBuffer();
 
-    LOG_WARNING(Service_FS, "(STUBBED) called Media type=0x%08X", cmd_buff[1]);
+    LOG_WARNING(Service_FS, "(STUBBED) called Media type={:#08X}", cmd_buff[1]);
 
     cmd_buff[1] = RESULT_SUCCESS.raw;
     cmd_buff[2] = 512;
@@ -783,7 +788,7 @@ static void GetFormatInfo(Service::Interface* self) {
     u32 archivename_ptr = cmd_buff[5];
     FileSys::Path archive_path(archivename_type, archivename_size, archivename_ptr);
 
-    LOG_DEBUG(Service_FS, "archive_path=%s", archive_path.DebugStr().c_str());
+    LOG_DEBUG(Service_FS, "archive_path={}", archive_path.DebugStr());
 
     cmd_buff[0] = IPC::MakeHeader(0x0845, 5, 0);
 

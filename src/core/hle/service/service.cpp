@@ -66,13 +66,13 @@ ResultVal<bool> Interface::SyncRequest() {
 
     if (itr == m_functions.end() || itr->second.func == nullptr) {
         std::string function_name = (itr == m_functions.end()) ? Common::StringFromFormat("0x%08X", cmd_buff[0]) : itr->second.name;
-        LOG_ERROR(Service, "unknown / unimplemented %s", MakeFunctionString(function_name.c_str(), GetPortName().c_str(), cmd_buff).c_str());
+        LOG_ERROR(Service, "unknown / unimplemented {}", MakeFunctionString(function_name.c_str(), GetPortName().c_str(), cmd_buff));
 
         // TODO(bunnei): Hack - ignore error
         cmd_buff[1] = 0;
         return MakeResult<bool>(false);
     }
-    LOG_TRACE(Service, "%s", MakeFunctionString(itr->second.name, GetPortName().c_str(), cmd_buff).c_str());
+    LOG_TRACE(Service, "{}", MakeFunctionString(itr->second.name, GetPortName().c_str(), cmd_buff));
 
     itr->second.func(this);
 

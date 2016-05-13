@@ -81,7 +81,7 @@ void GameList::DonePopulating()
 void GameList::PopulateAsync(const QString& dir_path, bool deep_scan)
 {
     if (!FileUtil::Exists(dir_path.toStdString()) || !FileUtil::IsDirectory(dir_path.toStdString())) {
-        LOG_ERROR(Frontend, "Could not find game list folder at %s", dir_path.toLocal8Bit().data());
+        LOG_ERROR(Frontend, "Could not find game list folder at {}", dir_path.toLocal8Bit().data());
         return;
     }
 
@@ -140,11 +140,11 @@ void GameListWorker::AddFstEntriesToGameList(const std::string& dir_path, bool d
                 return true;
             Loader::FileType filetype = Loader::IdentifyFile(physical_name);
             if (filetype == Loader::FileType::Unknown) {
-                LOG_WARNING(Frontend, "File %s is of indeterminate type and is possibly corrupted.", physical_name.c_str());
+                LOG_WARNING(Frontend, "File {} is of indeterminate type and is possibly corrupted.", physical_name);
                 return true;
             }
             if (guessed_filetype != filetype) {
-                LOG_WARNING(Frontend, "Filetype and extension of file %s do not match.", physical_name.c_str());
+                LOG_WARNING(Frontend, "Filetype and extension of file {} do not match.", physical_name);
             }
 
             std::vector<u8> smdh;

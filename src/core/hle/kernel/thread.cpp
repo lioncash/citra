@@ -294,7 +294,7 @@ void WaitCurrentThread_ArbitrateAddress(VAddr wait_address) {
 static void ThreadWakeupCallback(u64 thread_handle, int cycles_late) {
     SharedPtr<Thread> thread = wakeup_callback_handle_table.Get<Thread>((Handle)thread_handle);
     if (thread == nullptr) {
-        LOG_CRITICAL(Kernel, "Callback fired for invalid thread %08X", (Handle)thread_handle);
+        LOG_CRITICAL(Kernel, "Callback fired for invalid thread {:08X}", (Handle)thread_handle);
         return;
     }
 
@@ -334,12 +334,12 @@ void Thread::ResumeFromWait() {
             return;
 
         case THREADSTATUS_RUNNING:
-            DEBUG_ASSERT_MSG(false, "Thread with object id %u has already resumed.", GetObjectId());
+            DEBUG_ASSERT_MSG(false, "Thread with object id {} has already resumed.", GetObjectId());
             return;
         case THREADSTATUS_DEAD:
             // This should never happen, as threads must complete before being stopped.
-            DEBUG_ASSERT_MSG(false, "Thread with object id %u cannot be resumed because it's DEAD.",
-                GetObjectId());
+            DEBUG_ASSERT_MSG(false, "Thread with object id {} cannot be resumed because it's DEAD.",
+                             GetObjectId());
             return;
     }
 
@@ -355,13 +355,13 @@ static void DebugThreadQueue() {
     if (!thread) {
         LOG_DEBUG(Kernel, "Current: NO CURRENT THREAD");
     } else {
-        LOG_DEBUG(Kernel, "0x%02X %u (current)", thread->current_priority, GetCurrentThread()->GetObjectId());
+        LOG_DEBUG(Kernel, "{:#02X} {} (current)", thread->current_priority, GetCurrentThread()->GetObjectId());
     }
 
     for (auto& t : thread_list) {
         s32 priority = ready_queue.contains(t.get());
         if (priority != -1) {
-            LOG_DEBUG(Kernel, "0x%02X %u", priority, t->GetObjectId());
+            LOG_DEBUG(Kernel, "{:#02X} {}", priority, t->GetObjectId());
         }
     }
 }
@@ -370,15 +370,15 @@ ResultVal<SharedPtr<Thread>> Thread::Create(std::string name, VAddr entry_point,
         u32 arg, s32 processor_id, VAddr stack_top) {
     if (priority < THREADPRIO_HIGHEST || priority > THREADPRIO_LOWEST) {
         s32 new_priority = MathUtil::Clamp<s32>(priority, THREADPRIO_HIGHEST, THREADPRIO_LOWEST);
-        LOG_WARNING(Kernel_SVC, "(name=%s): invalid priority=%d, clamping to %d",
-            name.c_str(), priority, new_priority);
+        LOG_WARNING(Kernel_SVC, "(name={}): invalid priority={}, clamping to {}",
+                    name, priority, new_priority);
         // TODO(bunnei): Clamping to a valid priority is not necessarily correct behavior... Confirm
         // validity of this
         priority = new_priority;
     }
 
     if (!Memory::GetPointer(entry_point)) {
-        LOG_ERROR(Kernel_SVC, "(name=%s): invalid entry %08x", name.c_str(), entry_point);
+        LOG_ERROR(Kernel_SVC, "(name={}): invalid entry {:08x}", name, entry_point);
         // TODO: Verify error
         return ResultCode(ErrorDescription::InvalidAddress, ErrorModule::Kernel,
                 ErrorSummary::InvalidArgument, ErrorLevel::Permanent);
@@ -438,8 +438,8 @@ static void ClampPriority(const Thread* thread, s32* priority) {
         DEBUG_ASSERT_MSG(false, "Application passed an out of range priority. An error should be returned.");
 
         s32 new_priority = MathUtil::Clamp<s32>(*priority, THREADPRIO_HIGHEST, THREADPRIO_LOWEST);
-        LOG_WARNING(Kernel_SVC, "(name=%s): invalid priority=%d, clamping to %d",
-                    thread->name.c_str(), *priority, new_priority);
+        LOG_WARNING(Kernel_SVC, "(name={}): invalid priority={}, clamping to {}",
+                    thread->name, *priority, new_priority);
         // TODO(bunnei): Clamping to a valid priority is not necessarily correct behavior... Confirm
         // validity of this
         *priority = new_priority;
@@ -491,11 +491,11 @@ void Reschedule() {
         return;
 
     if (cur && next) {
-        LOG_TRACE(Kernel, "context switch %u -> %u", cur->GetObjectId(), next->GetObjectId());
+        LOG_TRACE(Kernel, "context switch {} -> {}", cur->GetObjectId(), next->GetObjectId());
     } else if (cur) {
-        LOG_TRACE(Kernel, "context switch %u -> idle", cur->GetObjectId());
+        LOG_TRACE(Kernel, "context switch {} -> idle", cur->GetObjectId());
     } else if (next) {
-        LOG_TRACE(Kernel, "context switch idle -> %u", next->GetObjectId());
+        LOG_TRACE(Kernel, "context switch idle -> {}", next->GetObjectId());
     }
 
     SwitchContext(next);

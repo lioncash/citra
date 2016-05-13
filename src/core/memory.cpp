@@ -78,12 +78,13 @@ static PageTable main_page_table;
 static PageTable* current_page_table = &main_page_table;
 
 static void MapPages(u32 base, u32 size, u8* memory, PageType type) {
-    LOG_DEBUG(HW_Memory, "Mapping %p onto %08X-%08X", memory, base * PAGE_SIZE, (base + size) * PAGE_SIZE);
+    LOG_DEBUG(HW_Memory, "Mapping {} onto {:08X}-{:08X}",
+              static_cast<void*>(memory), base * PAGE_SIZE, (base + size) * PAGE_SIZE);
 
     u32 end = base + size;
 
     while (base != end) {
-        ASSERT_MSG(base < PageTable::NUM_ENTRIES, "out of range mapping at %08X", base);
+        ASSERT_MSG(base < PageTable::NUM_ENTRIES, "Out of range mapping at {:08X}", base);
 
         // Since pages are unmapped on shutdown after video core is shutdown, the renderer may be null here
         if (current_page_table->attributes[base] == PageType::RasterizerCachedMemory ||
@@ -108,22 +109,22 @@ void InitMemoryMap() {
 }
 
 void MapMemoryRegion(VAddr base, u32 size, u8* target) {
-    ASSERT_MSG((size & PAGE_MASK) == 0, "non-page aligned size: %08X", size);
-    ASSERT_MSG((base & PAGE_MASK) == 0, "non-page aligned base: %08X", base);
+    ASSERT_MSG((size & PAGE_MASK) == 0, "Non-page aligned size: {:08X}", size);
+    ASSERT_MSG((base & PAGE_MASK) == 0, "Non-page aligned base: {:08X}", base);
     MapPages(base / PAGE_SIZE, size / PAGE_SIZE, target, PageType::Memory);
 }
 
 void MapIoRegion(VAddr base, u32 size, MMIORegionPointer mmio_handler) {
-    ASSERT_MSG((size & PAGE_MASK) == 0, "non-page aligned size: %08X", size);
-    ASSERT_MSG((base & PAGE_MASK) == 0, "non-page aligned base: %08X", base);
+    ASSERT_MSG((size & PAGE_MASK) == 0, "Non-page aligned size: {:08X}", size);
+    ASSERT_MSG((base & PAGE_MASK) == 0, "Non-page aligned base: {:08X}", base);
     MapPages(base / PAGE_SIZE, size / PAGE_SIZE, nullptr, PageType::Special);
 
     current_page_table->special_regions.emplace_back(SpecialRegion{base, size, mmio_handler});
 }
 
 void UnmapRegion(VAddr base, u32 size) {
-    ASSERT_MSG((size & PAGE_MASK) == 0, "non-page aligned size: %08X", size);
-    ASSERT_MSG((base & PAGE_MASK) == 0, "non-page aligned base: %08X", base);
+    ASSERT_MSG((size & PAGE_MASK) == 0, "Non-page aligned size: {:08X}", size);
+    ASSERT_MSG((base & PAGE_MASK) == 0, "Non-page aligned base: {:08X}", base);
     MapPages(base / PAGE_SIZE, size / PAGE_SIZE, nullptr, PageType::Unmapped);
 }
 
@@ -158,7 +159,7 @@ static MMIORegionPointer GetMMIOHandler(VAddr vaddr) {
             return region.handler;
         }
     }
-    ASSERT_MSG(false, "Mapped IO page without a handler @ %08X", vaddr);
+    ASSERT_MSG(false, "Mapped IO page without a handler @ {:08X}", vaddr);
     return nullptr; // Should never happen
 }
 
@@ -178,10 +179,10 @@ T Read(const VAddr vaddr) {
     PageType type = current_page_table->attributes[vaddr >> PAGE_BITS];
     switch (type) {
     case PageType::Unmapped:
-        LOG_ERROR(HW_Memory, "unmapped Read%lu @ 0x%08X", sizeof(T) * 8, vaddr);
+        LOG_ERROR(HW_Memory, "Unmapped Read{} @ {:#08X}", sizeof(T) * 8, vaddr);
         return 0;
     case PageType::Memory:
-        ASSERT_MSG(false, "Mapped memory page without a pointer @ %08X", vaddr);
+        ASSERT_MSG(false, "Mapped memory page without a pointer @ {:08X}", vaddr);
         break;
     case PageType::RasterizerCachedMemory:
     {
@@ -219,10 +220,10 @@ void Write(const VAddr vaddr, const T data) {
     PageType type = current_page_table->attributes[vaddr >> PAGE_BITS];
     switch (type) {
     case PageType::Unmapped:
-        LOG_ERROR(HW_Memory, "unmapped Write%lu 0x%08X @ 0x%08X", sizeof(data) * 8, (u32) data, vaddr);
+        LOG_ERROR(HW_Memory, "Unmapped Write{} {:#08X} @ {:#08X}", sizeof(data) * 8, (u32) data, vaddr);
         return;
     case PageType::Memory:
-        ASSERT_MSG(false, "Mapped memory page without a pointer @ %08X", vaddr);
+        ASSERT_MSG(false, "Mapped memory page without a pointer @ {:08X}", vaddr);
         break;
     case PageType::RasterizerCachedMemory:
     {
@@ -256,7 +257,7 @@ u8* GetPointer(const VAddr vaddr) {
         return GetPointerFromVMA(vaddr);
     }
 
-    LOG_ERROR(HW_Memory, "unknown GetPointer @ 0x%08x", vaddr);
+    LOG_ERROR(HW_Memory, "Unknown GetPointer @ {:#08x}", vaddr);
     return nullptr;
 }
 
@@ -420,7 +421,7 @@ PAddr VirtualToPhysicalAddress(const VAddr addr) {
         return addr - NEW_LINEAR_HEAP_VADDR + FCRAM_PADDR;
     }
 
-    LOG_ERROR(HW_Memory, "Unknown virtual address @ 0x%08X", addr);
+    LOG_ERROR(HW_Memory, "Unknown virtual address @ {:#08X}", addr);
     // To help with debugging, set bit on address so that it's obviously invalid.
     return addr | 0x80000000;
 }
@@ -438,7 +439,7 @@ VAddr PhysicalToVirtualAddress(const PAddr addr) {
         return addr - IO_AREA_PADDR + IO_AREA_VADDR;
     }
 
-    LOG_ERROR(HW_Memory, "Unknown physical address @ 0x%08X", addr);
+    LOG_ERROR(HW_Memory, "Unknown physical address @ {:#08X}", addr);
     // To help with debugging, set bit on address so that it's obviously invalid.
     return addr | 0x80000000;
 }

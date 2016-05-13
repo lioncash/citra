@@ -55,7 +55,7 @@ inline void Read(T &var, const u32 raw_addr) {
 
     // Reads other than u32 are untested, so I'd rather have them abort than silently fail
     if (index >= Regs::NumIds() || !std::is_same<T, u32>::value) {
-        LOG_ERROR(HW_GPU, "unknown Read%lu @ 0x%08X", sizeof(var) * 8, addr);
+        LOG_ERROR(HW_GPU, "unknown Read{} @ {:#08X}", sizeof(var) * 8, addr);
         return;
     }
 
@@ -80,7 +80,8 @@ static Math::Vec4<u8> DecodePixel(Regs::PixelFormat input_format, const u8* src_
         return Color::DecodeRGBA4(src_pixel);
 
     default:
-        LOG_ERROR(HW_GPU, "Unknown source framebuffer format %x", input_format);
+        LOG_ERROR(HW_GPU, "Unknown source framebuffer format {:x}",
+                  static_cast<u32>(input_format));
         return {0, 0, 0, 0};
     }
 }
@@ -95,7 +96,7 @@ inline void Write(u32 addr, const T data) {
 
     // Writes other than u32 are untested, so I'd rather have them abort than silently fail
     if (index >= Regs::NumIds() || !std::is_same<T, u32>::value) {
-        LOG_ERROR(HW_GPU, "unknown Write%lu 0x%08X @ 0x%08X", sizeof(data) * 8, (u32)data, addr);
+        LOG_ERROR(HW_GPU, "unknown Write{} {:#08X} @ {:#08X}", sizeof(data) * 8, (u32)data, addr);
         return;
     }
 
@@ -150,7 +151,7 @@ inline void Write(u32 addr, const T data) {
                     }
                 }
 
-                LOG_TRACE(HW_GPU, "MemoryFill from 0x%08x to 0x%08x", config.GetStartAddress(), config.GetEndAddress());
+                LOG_TRACE(HW_GPU, "MemoryFill from {:#08x} to {:#08x}", config.GetStartAddress(), config.GetEndAddress());
 
                 if (!is_second_filler) {
                     GSP_GPU::SignalInterrupt(GSP_GPU::InterruptId::PSC0);
@@ -217,18 +218,19 @@ inline void Write(u32 addr, const T data) {
                         }
                     }
 
-                    LOG_TRACE(HW_GPU, "TextureCopy: 0x%X bytes from 0x%08X(%u+%u)-> 0x%08X(%u+%u), flags 0x%08X",
-                        config.texture_copy.size,
-                        config.GetPhysicalInputAddress(), input_width, input_gap,
-                        config.GetPhysicalOutputAddress(), output_width, output_gap,
-                        config.flags);
+                    LOG_TRACE(HW_GPU, "TextureCopy: {:#X} bytes from {:#08X}({}+{})-> {:#08X}({}+{}), flags {:#08X}",
+                              config.texture_copy.size,
+                              config.GetPhysicalInputAddress(), input_width, input_gap,
+                              config.GetPhysicalOutputAddress(), output_width, output_gap,
+                              config.flags);
 
                     GSP_GPU::SignalInterrupt(GSP_GPU::InterruptId::PPF);
                     break;
                 }
 
                 if (config.scaling > config.ScaleXY) {
-                    LOG_CRITICAL(HW_GPU, "Unimplemented display transfer scaling mode %u", config.scaling.Value());
+                    LOG_CRITICAL(HW_GPU, "Unimplemented display transfer scaling mode {}",
+                                 static_cast<u32>(config.scaling.Value()));
                     UNIMPLEMENTED();
                     break;
                 }
@@ -341,17 +343,18 @@ inline void Write(u32 addr, const T data) {
                             break;
 
                         default:
-                            LOG_ERROR(HW_GPU, "Unknown destination framebuffer format %x", config.output_format.Value());
+                            LOG_ERROR(HW_GPU, "Unknown destination framebuffer format {:x}",
+                                      static_cast<u32>(config.output_format.Value()));
                             break;
                         }
                     }
                 }
 
-                LOG_TRACE(HW_GPU, "DisplayTriggerTransfer: 0x%08x bytes from 0x%08x(%ux%u)-> 0x%08x(%ux%u), dst format %x, flags 0x%08X",
-                      config.output_height * output_width * GPU::Regs::BytesPerPixel(config.output_format),
-                      config.GetPhysicalInputAddress(), config.input_width.Value(), config.input_height.Value(),
-                      config.GetPhysicalOutputAddress(), output_width, output_height,
-                      config.output_format.Value(), config.flags);
+                LOG_TRACE(HW_GPU, "DisplayTriggerTransfer: {:#08x} bytes from {:#08x}({}x{})-> {:#08x}({}x{}), dst format {:x}, flags {:#08X}",
+                          config.output_height * output_width * GPU::Regs::BytesPerPixel(config.output_format),
+                          config.GetPhysicalInputAddress(), config.input_width.Value(), config.input_height.Value(),
+                          config.GetPhysicalOutputAddress(), output_width, output_height,
+                          static_cast<u32>(config.output_format.Value()), config.flags);
             }
 
             g_regs.display_transfer_config.trigger = 0;

@@ -156,7 +156,7 @@ static Instruction GetVertexShaderInstruction(size_t offset) {
 }
 
 static void LogCritical(const char* msg) {
-    LOG_CRITICAL(HW_GPU, "%s", msg);
+    LOG_CRITICAL(HW_GPU, "{}", msg);
 }
 
 void JitShader::Compile_Assert(bool condition, const char* msg) {
@@ -786,8 +786,9 @@ void JitShader::Compile_NextInstr() {
         ((*this).*instr_func)(instr);
     } else {
         // Unhandled instruction
-        LOG_CRITICAL(HW_GPU, "Unhandled instruction: 0x%02x (0x%08x)",
-                instr.opcode.Value().EffectiveOpCode(), instr.hex);
+        LOG_CRITICAL(HW_GPU, "Unhandled instruction: {:#02x} ({:#08x})",
+                     static_cast<u32>(instr.opcode.Value().EffectiveOpCode()),
+                     instr.hex);
     }
 }
 
@@ -864,7 +865,7 @@ void JitShader::Compile() {
     uintptr_t size = reinterpret_cast<uintptr_t>(GetCodePtr()) - reinterpret_cast<uintptr_t>(program);
     ASSERT_MSG(size <= MAX_SHADER_SIZE, "Compiled a shader that exceeds the allocated size!");
 
-    LOG_DEBUG(HW_GPU, "Compiled shader size=%lu", size);
+    LOG_DEBUG(HW_GPU, "Compiled shader size={}", size);
 }
 
 JitShader::JitShader() {

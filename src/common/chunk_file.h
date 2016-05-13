@@ -26,9 +26,11 @@
 // - Zero backwards/forwards compatibility
 // - Serialization code for anything complex has to be manually written.
 
+#include <codecvt>
 #include <cstring>
 #include <deque>
 #include <list>
+#include <locale>
 #include <map>
 #include <set>
 #include <string>
@@ -157,7 +159,7 @@ public:
             Do(foundVersion);
 
         if (error == ERROR_FAILURE || foundVersion < minVer || foundVersion > ver) {
-            LOG_ERROR(Common, "Savestate failure: wrong version %d found for %s", foundVersion, title);
+            LOG_ERROR(Common, "Savestate failure: wrong version {} found for {}", foundVersion, title);
             SetError(ERROR_FAILURE);
             return PointerWrapSection(*this, -1, title);
         }
@@ -184,9 +186,9 @@ public:
         case MODE_VERIFY:
             for (int i = 0; i < size; i++) {
                 DEBUG_ASSERT_MSG(((u8*)data)[i] == (*ptr)[i],
-                    "Savestate verification failure: %d (0x%X) (at %p) != %d (0x%X) (at %p).\n",
-                    ((u8*)data)[i], ((u8*)data)[i], &((u8*)data)[i],
-                    (*ptr)[i], (*ptr)[i], &(*ptr)[i]);
+                    "Savestate verification failure: {} ({:#X}) (at {}) != {} ({:#X}) (at {}).\n",
+                    ((u8*)data)[i], ((u8*)data)[i], static_cast<void*>(&((u8*)data)[i]),
+                    (*ptr)[i], (*ptr)[i], static_cast<void*>(&(*ptr)[i]));
             }
             break;
         default: break;  // throw an error?
@@ -204,9 +206,9 @@ public:
         case MODE_VERIFY:
             for (int i = 0; i < size; i++) {
                 DEBUG_ASSERT_MSG(((u8*)data)[i] == (*ptr)[i],
-                    "Savestate verification failure: %d (0x%X) (at %p) != %d (0x%X) (at %p).\n",
-                    ((u8*)data)[i], ((u8*)data)[i], &((u8*)data)[i],
-                    (*ptr)[i], (*ptr)[i], &(*ptr)[i]);
+                    "Savestate verification failure: {} ({:#X}) (at {}) != {} ({:#X}) (at {}).\n",
+                    ((u8*)data)[i], ((u8*)data)[i], static_cast<void*>(&((u8*)data)[i]),
+                    (*ptr)[i], (*ptr)[i], static_cast<void*>(&(*ptr)[i]));
             }
             break;
         default: break;  // throw an error?
@@ -493,7 +495,8 @@ public:
             break;
 
         default:
-            LOG_ERROR(Common, "Savestate error: invalid mode %d.", mode);
+            LOG_ERROR(Common, "Savestate error: invalid mode {}.", mode);
+            break;
         }
     }
 
@@ -508,27 +511,9 @@ public:
         case MODE_WRITE:    memcpy(*ptr, x.c_str(), stringLen); break;
         case MODE_MEASURE: break;
         case MODE_VERIFY:
-            DEBUG_ASSERT_MSG((x == (char*)*ptr),
-                "Savestate verification failure: \"%s\" != \"%s\" (at %p).\n",
-                x.c_str(), (char*)*ptr, ptr);
-            break;
-        }
-        (*ptr) += stringLen;
-    }
-
-    void Do(std::wstring &x)
-    {
-        int stringLen = sizeof(wchar_t)*((int)x.length() + 1);
-        Do(stringLen);
-
-        switch (mode) {
-        case MODE_READ:        x = (wchar_t*)*ptr; break;
-        case MODE_WRITE:    memcpy(*ptr, x.c_str(), stringLen); break;
-        case MODE_MEASURE: break;
-        case MODE_VERIFY:
-            DEBUG_ASSERT_MSG((x == (wchar_t*)*ptr),
-                "Savestate verification failure: \"%ls\" != \"%ls\" (at %p).\n",
-                x.c_str(), (wchar_t*)*ptr, ptr);
+            DEBUG_ASSERT_MSG((x == reinterpret_cast<char*>(*ptr)),
+                "Savestate verification failure: \"{}\" != \"{}\" (at {}).\n",
+                x, reinterpret_cast<char*>(*ptr), static_cast<void*>(ptr));
             break;
         }
         (*ptr) += stringLen;
@@ -640,7 +625,7 @@ public:
         Do(cookie);
         if(mode == PointerWrap::MODE_READ && cookie != arbitraryNumber)
         {
-            LOG_ERROR(Common, "After \"%s\", found %d (0x%X) instead of save marker %d (0x%X). Aborting savestate load...", prevName, cookie, cookie, arbitraryNumber, arbitraryNumber);
+            LOG_ERROR(Common, "After \"{}\", found {} ({:#X}) instead of save marker {} ({:#X}). Aborting savestate load...", prevName, cookie, cookie, arbitraryNumber, arbitraryNumber);
             SetError(ERROR_FAILURE);
         }
     }

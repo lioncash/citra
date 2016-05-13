@@ -23,7 +23,7 @@ namespace Applets {
 
 ResultCode MiiSelector::ReceiveParameter(const Service::APT::MessageParameter& parameter) {
     if (parameter.signal != static_cast<u32>(Service::APT::SignalType::LibAppJustStarted)) {
-        LOG_ERROR(Service_APT, "unsupported signal %u", parameter.signal);
+        LOG_ERROR(Service_APT, "unsupported signal {}", parameter.signal);
         UNIMPLEMENTED();
         // TODO(Subv): Find the right error code
         return ResultCode(-1);

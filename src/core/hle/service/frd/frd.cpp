@@ -45,7 +45,7 @@ void GetFriendKeyList(Service::Interface* self) {
 
     cmd_buff[1] = RESULT_SUCCESS.raw; // No error
     cmd_buff[2] = 0; // 0 friends
-    LOG_WARNING(Service_FRD, "(STUBBED) called, unknown=%d, frd_count=%d, frd_key_addr=0x%08X",
+    LOG_WARNING(Service_FRD, "(STUBBED) called, unknown={}, frd_count={}, frd_key_addr={:#08X}",
                 unknown, frd_count, frd_key_addr);
 }
 
@@ -63,7 +63,7 @@ void GetFriendProfile(Service::Interface* self) {
     }
 
     cmd_buff[1] = RESULT_SUCCESS.raw; // No error
-    LOG_WARNING(Service_FRD, "(STUBBED) called, count=%d, frd_key_addr=0x%08X, profiles_addr=0x%08X",
+    LOG_WARNING(Service_FRD, "(STUBBED) called, count={}, frd_key_addr={:#08X}, profiles_addr={:#08X}",
                 count, frd_key_addr, profiles_addr);
 }
 
@@ -80,7 +80,7 @@ void GetFriendAttributeFlags(Service::Interface* self) {
     }
 
     cmd_buff[1] = RESULT_SUCCESS.raw; // No error
-    LOG_WARNING(Service_FRD, "(STUBBED) called, count=%d, frd_key_addr=0x%08X, attr_flags_addr=0x%08X",
+    LOG_WARNING(Service_FRD, "(STUBBED) called, count={}, frd_key_addr={:#08X}, attr_flags_addr={:#08X}",
                 count, frd_key_addr, attr_flags_addr);
 }
 

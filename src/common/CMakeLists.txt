@@ -7,9 +7,8 @@ set(SRCS
             file_util.cpp
             hash.cpp
             key_map.cpp
-            logging/filter.cpp
+            logging/log.cpp
             logging/text_formatter.cpp
-            logging/backend.cpp
             memory_util.cpp
             microprofile.cpp
             misc.cpp
@@ -39,9 +38,7 @@ set(HEADERS
             key_map.h
             linear_disk_cache.h
             logging/text_formatter.h
-            logging/filter.h
             logging/log.h
-            logging/backend.h
             math_util.h
             memory_util.h
             microprofile.h

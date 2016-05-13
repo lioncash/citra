@@ -251,7 +251,7 @@ struct ldst_inst {
     unsigned int inst;
     get_addr_fp_t get_addr;
 };
-#define DEBUG_MSG LOG_DEBUG(Core_ARM11, "inst is %x", inst); CITRA_IGNORE_EXIT(0)
+#define DEBUG_MSG LOG_DEBUG(Core_ARM11, "inst is {:#08x}", inst)
 
 #define LnSWoUB(s)   glue(LnSWoUB, s)
 #define MLnS(s)      glue(MLnS, s)
@@ -1382,7 +1382,7 @@ static ARM_INST_PTR INTERPRETER_TRANSLATE(cdp)(unsigned int inst, int index) {
     inst_cream->opcode_1 = BITS(inst, 20, 23);
     inst_cream->inst = inst;
 
-    LOG_TRACE(Core_ARM11, "inst %x index %x", inst, index);
+    LOG_TRACE(Core_ARM11, "inst {:08x} index {:x}", inst, index);
     return inst_base;
 }
 static ARM_INST_PTR INTERPRETER_TRANSLATE(clrex)(unsigned int inst, int index)
@@ -3482,8 +3482,8 @@ static unsigned int InterpreterTranslateInstruction(const ARMul_State* cpu, cons
     int idx;
     if (DecodeARMInstruction(inst, &idx) == ARMDecodeStatus::FAILURE) {
         std::string disasm = ARM_Disasm::Disassemble(phys_addr, inst);
-        LOG_ERROR(Core_ARM11, "Decode failure.\tPC : [0x%x]\tInstruction : %s [%x]", phys_addr, disasm.c_str(), inst);
-        LOG_ERROR(Core_ARM11, "cpsr=0x%x, cpu->TFlag=%d, r15=0x%x", cpu->Cpsr, cpu->TFlag, cpu->Reg[15]);
+        LOG_ERROR(Core_ARM11, "Decode failure.\tPC : [{:#08x}]\tInstruction : {} [{:x}]", phys_addr, disasm, inst);
+        LOG_ERROR(Core_ARM11, "cpsr={:#08x}, cpu->TFlag={}, r15={:08x}", cpu->Cpsr, cpu->TFlag, cpu->Reg[15]);
         CITRA_IGNORE_EXIT(-1);
     }
     inst_base = arm_instruction_trans[idx](inst, idx);
@@ -4060,7 +4060,7 @@ unsigned InterpreterMainLoop(ARMul_State* cpu) {
     {
         if (inst_base->cond == ConditionCode::AL || CondPassed(cpu, inst_base->cond)) {
             bkpt_inst* const inst_cream = (bkpt_inst*)inst_base->component;
-            LOG_DEBUG(Core_ARM11, "Breakpoint instruction hit. Immediate: 0x%08X", inst_cream->imm);
+            LOG_DEBUG(Core_ARM11, "Breakpoint instruction hit. Immediate: {:#08X}", inst_cream->imm);
         }
         cpu->Reg[15] += cpu->GetInstructionSize();
         INC_PC(sizeof(bkpt_inst));
@@ -4286,7 +4286,6 @@ unsigned InterpreterMainLoop(ARMul_State* cpu) {
     LDC_INST:
     {
         // Instruction not implemented
-        //LOG_CRITICAL(Core_ARM11, "unimplemented instruction");
         cpu->Reg[15] += cpu->GetInstructionSize();
         INC_PC(sizeof(ldc_inst));
         FETCH_INST;
@@ -4655,7 +4654,7 @@ unsigned InterpreterMainLoop(ARMul_State* cpu) {
         if (inst_base->cond == ConditionCode::AL || CondPassed(cpu, inst_base->cond)) {
             mcrr_inst* const inst_cream = (mcrr_inst*)inst_base->component;
 
-            LOG_ERROR(Core_ARM11, "MCRR executed | Coprocessor: %u, CRm %u, opc1: %u, Rt: %u, Rt2: %u",
+            LOG_ERROR(Core_ARM11, "MCRR executed | Coprocessor: {}, CRm {}, opc1: {}, Rt: {}, Rt2: {}",
                       inst_cream->cp_num, inst_cream->crm, inst_cream->opcode_1, inst_cream->rt, inst_cream->rt2);
         }
 
@@ -4741,7 +4740,7 @@ unsigned InterpreterMainLoop(ARMul_State* cpu) {
         if (inst_base->cond == ConditionCode::AL || CondPassed(cpu, inst_base->cond)) {
             mcrr_inst* const inst_cream = (mcrr_inst*)inst_base->component;
 
-            LOG_ERROR(Core_ARM11, "MRRC executed | Coprocessor: %u, CRm %u, opc1: %u, Rt: %u, Rt2: %u",
+            LOG_ERROR(Core_ARM11, "MRRC executed | Coprocessor: {}, CRm {}, opc1: {}, Rt: {}, Rt2: {}",
                       inst_cream->cp_num, inst_cream->crm, inst_cream->opcode_1, inst_cream->rt, inst_cream->rt2);
         }
 
@@ -5384,7 +5383,7 @@ unsigned InterpreterMainLoop(ARMul_State* cpu) {
         else
             cpu->Cpsr &= ~(1 << 9);
 
-        LOG_WARNING(Core_ARM11, "SETEND %s executed", big_endian ? "BE" : "LE");
+        LOG_WARNING(Core_ARM11, "SETEND {} executed", big_endian ? "BE" : "LE");
 
         cpu->Reg[15] += cpu->GetInstructionSize();
         INC_PC(sizeof(setend_inst));
@@ -5855,7 +5854,6 @@ unsigned InterpreterMainLoop(ARMul_State* cpu) {
     STC_INST:
     {
         // Instruction not implemented
-        //LOG_CRITICAL(Core_ARM11, "unimplemented instruction");
         cpu->Reg[15] += cpu->GetInstructionSize();
         INC_PC(sizeof(stc_inst));
         FETCH_INST;

@@ -162,9 +162,9 @@ void ProcessTriangle(const OutputVertex &v0, const OutputVertex &v1, const Outpu
         InitScreenCoordinates(vtx2);
 
         LOG_TRACE(Render_Software,
-                  "Triangle %lu/%lu at position (%.3f, %.3f, %.3f, %.3f), "
-                  "(%.3f, %.3f, %.3f, %.3f), (%.3f, %.3f, %.3f, %.3f) and "
-                  "screen position (%.2f, %.2f, %.2f), (%.2f, %.2f, %.2f), (%.2f, %.2f, %.2f)",
+                  "Triangle {}/{} at position ({:.3f}, {:.3f}, {:.3f}, {:.3f}), "
+                  "({:.3f}, {:.3f}, {:.3f}, {:.3f}), ({:.3f}, {:.3f}, {:.3f}, {:.3f}) and "
+                  "screen position ({:.2f}, {:.2f}, {:.2f}), ({:.2f}, {:.2f}, {:.2f}), ({:.2f}, {:.2f}, {:.2f})",
                   i + 1, output_list->size() - 2,
                   vtx0.pos.x.ToFloat32(), vtx0.pos.y.ToFloat32(), vtx0.pos.z.ToFloat32(), vtx0.pos.w.ToFloat32(),
                   vtx1.pos.x.ToFloat32(), vtx1.pos.y.ToFloat32(), vtx1.pos.z.ToFloat32(), vtx1.pos.w.ToFloat32(),

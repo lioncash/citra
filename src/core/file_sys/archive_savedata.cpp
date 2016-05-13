@@ -39,7 +39,7 @@ static std::string GetSaveDataMetadataPath(const std::string& mount_location, u6
 
 ArchiveFactory_SaveData::ArchiveFactory_SaveData(const std::string& sdmc_directory)
         : mount_point(GetSaveDataContainerPath(sdmc_directory)) {
-    LOG_INFO(Service_FS, "Directory %s set as SaveData.", this->mount_point.c_str());
+    LOG_INFO(Service_FS, "Directory {} set as SaveData.", mount_point);
 }
 
 ResultVal<std::unique_ptr<ArchiveBackend>> ArchiveFactory_SaveData::Open(const Path& path) {

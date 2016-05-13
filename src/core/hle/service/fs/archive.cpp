@@ -100,12 +100,12 @@ ResultVal<bool> File::SyncRequest() {
             u64 offset = cmd_buff[1] | ((u64)cmd_buff[2]) << 32;
             u32 length = cmd_buff[3];
             u32 address = cmd_buff[5];
-            LOG_TRACE(Service_FS, "Read %s %s: offset=0x%llx length=%d address=0x%x",
-                      GetTypeName().c_str(), GetName().c_str(), offset, length, address);
+            LOG_TRACE(Service_FS, "Read {} {}: offset={:#x} length={} address={:#x}",
+                      GetTypeName(), GetName(), offset, length, address);
 
             if (offset + length > backend->GetSize()) {
-                LOG_ERROR(Service_FS, "Reading from out of bounds offset=0x%llX length=0x%08X file_size=0x%llX",
-                          offset, length, backend->GetSize());
+                LOG_ERROR(Service_FS, "Reading from out of bounds offset={:#X} length={:#08X} file_size={:#X}",
+                           offset, length, backend->GetSize());
             }
 
             ResultVal<size_t> read = backend->Read(offset, length, Memory::GetPointer(address));
@@ -125,8 +125,8 @@ ResultVal<bool> File::SyncRequest() {
             u32 length = cmd_buff[3];
             u32 flush = cmd_buff[4];
             u32 address = cmd_buff[6];
-            LOG_TRACE(Service_FS, "Write %s %s: offset=0x%llx length=%d address=0x%x, flush=0x%x",
-                      GetTypeName().c_str(), GetName().c_str(), offset, length, address, flush);
+            LOG_TRACE(Service_FS, "Write {} {}: offset={:#x} length={} address={:#x}, flush={:#x}",
+                      GetTypeName(), GetName(), offset, length, address, flush);
 
             ResultVal<size_t> written = backend->Write(offset, length, flush != 0, Memory::GetPointer(address));
             if (written.Failed()) {
@@ -139,7 +139,7 @@ ResultVal<bool> File::SyncRequest() {
 
         case FileCommand::GetSize:
         {
-            LOG_TRACE(Service_FS, "GetSize %s %s", GetTypeName().c_str(), GetName().c_str());
+            LOG_TRACE(Service_FS, "GetSize {} {}", GetTypeName(), GetName());
             u64 size = backend->GetSize();
             cmd_buff[2] = (u32)size;
             cmd_buff[3] = size >> 32;
@@ -149,15 +149,15 @@ ResultVal<bool> File::SyncRequest() {
         case FileCommand::SetSize:
         {
             u64 size = cmd_buff[1] | ((u64)cmd_buff[2] << 32);
-            LOG_TRACE(Service_FS, "SetSize %s %s size=%llu",
-                GetTypeName().c_str(), GetName().c_str(), size);
+            LOG_TRACE(Service_FS, "SetSize {} {} size={}",
+                       GetTypeName(), GetName(), size);
             backend->SetSize(size);
             break;
         }
 
         case FileCommand::Close:
         {
-            LOG_TRACE(Service_FS, "Close %s %s", GetTypeName().c_str(), GetName().c_str());
+            LOG_TRACE(Service_FS, "Close {} {}", GetTypeName(), GetName());
             backend->Close();
             break;
         }
@@ -171,7 +171,7 @@ ResultVal<bool> File::SyncRequest() {
 
         case FileCommand::OpenLinkFile:
         {
-            LOG_WARNING(Service_FS, "(STUBBED) File command OpenLinkFile %s", GetName().c_str());
+            LOG_WARNING(Service_FS, "(STUBBED) File command OpenLinkFile {}", GetName());
             cmd_buff[3] = Kernel::g_handle_table.Create(this).ValueOr(INVALID_HANDLE);
             break;
         }
@@ -179,7 +179,7 @@ ResultVal<bool> File::SyncRequest() {
         case FileCommand::SetPriority:
         {
             priority = cmd_buff[1];
-            LOG_TRACE(Service_FS, "SetPriority %u", priority);
+            LOG_TRACE(Service_FS, "SetPriority {}", priority);
             break;
         }
 
@@ -192,7 +192,7 @@ ResultVal<bool> File::SyncRequest() {
 
         // Unknown command...
         default:
-            LOG_ERROR(Service_FS, "Unknown command=0x%08X!", cmd);
+            LOG_ERROR(Service_FS, "Unknown command={:#08X}!", static_cast<u32>(cmd));
             ResultCode error = UnimplementedFunction(ErrorModule::FS);
             cmd_buff[1] = error.raw; // TODO(Link Mauve): use the correct error code for that.
             return error;
@@ -217,8 +217,8 @@ ResultVal<bool> Directory::SyncRequest() {
             u32 count = cmd_buff[1];
             u32 address = cmd_buff[3];
             auto entries = reinterpret_cast<FileSys::Entry*>(Memory::GetPointer(address));
-            LOG_TRACE(Service_FS, "Read %s %s: count=%d",
-                GetTypeName().c_str(), GetName().c_str(), count);
+            LOG_TRACE(Service_FS, "Read {} {}: count={}",
+                      GetTypeName(), GetName(), count);
 
             // Number of entries actually read
             cmd_buff[2] = backend->Read(count, entries);
@@ -227,14 +227,14 @@ ResultVal<bool> Directory::SyncRequest() {
 
         case DirectoryCommand::Close:
         {
-            LOG_TRACE(Service_FS, "Close %s %s", GetTypeName().c_str(), GetName().c_str());
+            LOG_TRACE(Service_FS, "Close {} {}", GetTypeName(), GetName());
             backend->Close();
             break;
         }
 
         // Unknown command...
         default:
-            LOG_ERROR(Service_FS, "Unknown command=0x%08X!", cmd);
+            LOG_ERROR(Service_FS, "Unknown command={:#08X}!", static_cast<u32>(cmd));
             ResultCode error = UnimplementedFunction(ErrorModule::FS);
             cmd_buff[1] = error.raw; // TODO(Link Mauve): use the correct error code for that.
             return MakeResult<bool>(false);
@@ -266,7 +266,7 @@ static ArchiveBackend* GetArchive(ArchiveHandle handle) {
 }
 
 ResultVal<ArchiveHandle> OpenArchive(ArchiveIdCode id_code, FileSys::Path& archive_path) {
-    LOG_TRACE(Service_FS, "Opening archive with id code 0x%08X", id_code);
+    LOG_TRACE(Service_FS, "Opening archive with id code {:#08X}", static_cast<u32>(id_code));
 
     auto itr = id_code_map.find(id_code);
     if (itr == id_code_map.end()) {
@@ -301,7 +301,8 @@ ResultCode RegisterArchiveType(std::unique_ptr<FileSys::ArchiveFactory>&& factor
     ASSERT_MSG(inserted, "Tried to register more than one archive with same id code");
 
     auto& archive = result.first->second;
-    LOG_DEBUG(Service_FS, "Registered archive %s with id code 0x%08X", archive->GetName().c_str(), id_code);
+    LOG_DEBUG(Service_FS, "Registered archive {} with id code {:#08X}",
+              archive->GetName(), static_cast<u32>(id_code));
     return RESULT_SUCCESS;
 }
 
@@ -474,7 +475,7 @@ ResultCode DeleteExtSaveData(MediaType media_type, u32 high, u32 low) {
     } else if (media_type == MediaType::SDMC) {
         media_type_directory = FileUtil::GetUserPath(D_SDMC_IDX);
     } else {
-        LOG_ERROR(Service_FS, "Unsupported media type %u", media_type);
+        LOG_ERROR(Service_FS, "Unsupported media type {}", static_cast<u32>(media_type));
         return ResultCode(-1); // TODO(Subv): Find the right error code
     }
 
@@ -525,7 +526,7 @@ void ArchiveInit() {
     if (sdmc_factory->Initialize())
         RegisterArchiveType(std::move(sdmc_factory), ArchiveIdCode::SDMC);
     else
-        LOG_ERROR(Service_FS, "Can't instantiate SDMC archive with path %s", sdmc_directory.c_str());
+        LOG_ERROR(Service_FS, "Can't instantiate SDMC archive with path {}", sdmc_directory);
 
     // Create the SaveData archive
     auto savedata_factory = std::make_unique<FileSys::ArchiveFactory_SaveData>(sdmc_directory);
@@ -535,14 +536,14 @@ void ArchiveInit() {
     if (extsavedata_factory->Initialize())
         RegisterArchiveType(std::move(extsavedata_factory), ArchiveIdCode::ExtSaveData);
     else
-        LOG_ERROR(Service_FS, "Can't instantiate ExtSaveData archive with path %s", extsavedata_factory->GetMountPoint().c_str());
+        LOG_ERROR(Service_FS, "Can't instantiate ExtSaveData archive with path {}", extsavedata_factory->GetMountPoint());
 
     auto sharedextsavedata_factory = std::make_unique<FileSys::ArchiveFactory_ExtSaveData>(nand_directory, true);
     if (sharedextsavedata_factory->Initialize())
         RegisterArchiveType(std::move(sharedextsavedata_factory), ArchiveIdCode::SharedExtSaveData);
     else
-        LOG_ERROR(Service_FS, "Can't instantiate SharedExtSaveData archive with path %s",
-            sharedextsavedata_factory->GetMountPoint().c_str());
+        LOG_ERROR(Service_FS, "Can't instantiate SharedExtSaveData archive with path {}",
+            sharedextsavedata_factory->GetMountPoint());
 
     // Create the SaveDataCheck archive, basically a small variation of the RomFS archive
     auto savedatacheck_factory = std::make_unique<FileSys::ArchiveFactory_SaveDataCheck>(nand_directory);

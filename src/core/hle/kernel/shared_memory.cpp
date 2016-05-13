@@ -32,8 +32,8 @@ ResultCode SharedMemory::Map(VAddr address, MemoryPermission permissions,
         MemoryPermission other_permissions) {
 
     if (base_address != 0) {
-        LOG_ERROR(Kernel, "cannot map id=%u, address=0x%08X name=%s: already mapped at 0x%08X!",
-            GetObjectId(), address, name.c_str(), base_address);
+        LOG_ERROR(Kernel, "cannot map id={}, address={:#08X} name={}: already mapped at {:#08X}!",
+                  GetObjectId(), address, name, base_address);
         // TODO: Verify error code with hardware
         return ResultCode(ErrorDescription::InvalidAddress, ErrorModule::Kernel,
             ErrorSummary::InvalidArgument, ErrorLevel::Permanent);
@@ -47,8 +47,8 @@ ResultCode SharedMemory::Map(VAddr address, MemoryPermission permissions,
 
     if (fixed_address != 0) {
          if (address != 0 && address != fixed_address) {
-            LOG_ERROR(Kernel, "cannot map id=%u, address=0x%08X name=%s: fixed_addres is 0x%08X!",
-                    GetObjectId(), address, name.c_str(), fixed_address);
+             LOG_ERROR(Kernel, "cannot map id={}, address={:#08X} name={}: fixed_addres is {:#08X}!",
+                       GetObjectId(), address, name, fixed_address);
             // TODO: Verify error code with hardware
             return ResultCode(ErrorDescription::InvalidAddress, ErrorModule::Kernel,
                 ErrorSummary::InvalidArgument, ErrorLevel::Permanent);
@@ -60,8 +60,8 @@ ResultCode SharedMemory::Map(VAddr address, MemoryPermission permissions,
     }
 
     if (address < Memory::SHARED_MEMORY_VADDR || address + size >= Memory::SHARED_MEMORY_VADDR_END) {
-        LOG_ERROR(Kernel, "cannot map id=%u, address=0x%08X name=%s outside of shared mem bounds!",
-                GetObjectId(), address, name.c_str());
+        LOG_ERROR(Kernel, "cannot map id={}, address={:#08X} name={} outside of shared mem bounds!",
+                  GetObjectId(), address, name);
         // TODO: Verify error code with hardware
         return ResultCode(ErrorDescription::InvalidAddress, ErrorModule::Kernel,
                 ErrorSummary::InvalidArgument, ErrorLevel::Permanent);
@@ -99,7 +99,7 @@ u8* SharedMemory::GetPointer(u32 offset) {
     if (base_address != 0)
         return Memory::GetPointer(base_address + offset);
 
-    LOG_ERROR(Kernel_SVC, "memory block id=%u not mapped!", GetObjectId());
+    LOG_ERROR(Kernel_SVC, "memory block id={} not mapped!", GetObjectId());
     return nullptr;
 }
 
