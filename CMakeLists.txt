@@ -254,6 +254,7 @@ if(ENABLE_QT)
 endif()
 
 add_subdirectory(externals/soundtouch)
+include_directories(externals/spdlog/include)
 
 add_subdirectory(src)
 
