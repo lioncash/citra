@@ -16,11 +16,12 @@ addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
+      - sourceline: ppa:beineri/opt-qt551-trusty
+      - sourceline: deb http://ppa.launchpad.net/beineri/opt-qt551-trusty/ubuntu/ trusty main
     packages:
       - gcc-6
       - g++-6
-      - qt5-default
-      - libqt5opengl5-dev
+      - qt55base
       - xorg-dev
       - lib32stdc++6 # For CMake
       - lftp # To upload builds
